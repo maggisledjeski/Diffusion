@@ -40,7 +40,12 @@ x = mi/float(ma)
 print "Cmax =", ma
 print "Cmin =", mi
 print "Cmin/Cmax =", x
-
+l=0
+m=0
+n=0
+i=0
+j=0
+k=0
 while x <= .99:
     tacc = tacc + tstep
     #keeps position in the room
@@ -55,10 +60,22 @@ while x <= .99:
                 for i in range(i,N):
                     for j in range(j,N):
                         for k in range(k,N):
-                            if (l==i and m==j and n==k+1) or (l==i and m==j and n==k-1) or (l==i and m==j+1 and n==k) or (l==i and m==j-1 and n==k) or (l==i+1 and m==j and n==k) or (l==i-1 and m==j and n==k)
+                            if (l==i and m==j and n==k+1) or (l==i and m==j and n==k-1) or (l==i and m==j+1 and n==k) or (l==i and m==j-1 and n==k) or (l==i+1 and m==j and n==k) or (l==i-1 and m==j and n==k):
                                 temp = (A[l][m][n]-A[i][j][k])*Dterm
                                 A[l][m][n] = A[l][m][n] - temp
                                 A[i][j][k] = A[i][j][k] + temp
+
+    s = 0
+    for a in range(0,N):
+        for b in range(0,N):
+            for c in range(0,N):
+                elementList.append(A[a][b][c])
+                s = s + A[a][b][c]
+    ma = Cma(*elementList)
+    mi = Cmi(*elementList)
+    x = mi/float(ma)
+    print "x =", x
+    print "sum =", s
                 #            if i > 0 and j > 0:
                 #                A[i][j][k] = A[i-1][j-1][k]-2
                 #            elif j > 0:
