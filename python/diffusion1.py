@@ -10,7 +10,7 @@ def Cmi(*list):
 #    print list[length-1]
     return list[length-1]
 
-tacc=0
+tacc=0.0
 Lroom=5
 Msize=10.0
 urms=250.0
@@ -31,9 +31,10 @@ for l in range(0,N):
             if l==0 and m==0 and n==0:
                 A[0][0][0] = 10
             else:
-                A[l][m][n] = 0
+                A[l][m][n] = 0.0
             L.append(A[l][m][n])
 #            print "A[%d][%d][%d] = %d" % (i, j, k, A[i][j][k])
+ma = 0.0
 ma = Cma(*L)
 mi = Cmi(*L)
 x = mi/float(ma)
@@ -65,7 +66,7 @@ while x <= .99:
                                 A[l][m][n] = A[l][m][n] - temp
                                 A[i][j][k] = A[i][j][k] + temp
 
-    s = 0
+    s = 0.0
     for a in range(0,N):
         for b in range(0,N):
             for c in range(0,N):
