@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+double findRatio(double ***A, int N);
+
 int main(int argc, char** argv)
 {
     const int N = 10;
@@ -50,6 +52,7 @@ int main(int argc, char** argv)
 
     while(ratio < 0.99)
     {
+        time = time + timestep;
         for(i=0;i<N;i++)
         {
             for(j=0;j<N;j++)
@@ -89,11 +92,12 @@ int main(int argc, char** argv)
 //                    A[i][j][k] = A[i][j][k]+1.0;
 //                }
 //                printf("%f\t",A[i][j][k]);
-                }
-                printf("\n");
+                } 
             }
-            printf("\n");
-        }
+        }//end of for loops
+        ratio = findRatio(A,N);
+        //printf(time + "\n");
+        //printf(ratio);
     }
     printf("The last element is %f\n",A[N-1][N-1][N-1]);
 
@@ -111,3 +115,29 @@ int main(int argc, char** argv)
     free(A);
 }
 
+double findRatio(double ***A, int N)
+{
+    int i,j,k;
+    double max = A[0][0][0];
+    double min = A[0][0][0];
+    double ratio;
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<N;j++)
+        {
+            for(k=0;k<N;k++)
+            {
+                if(A[i][j][k] > max) 
+                {
+                    max = A[i][j][k];
+                }
+                if(A[i][j][k] < min)
+                {
+                    min = A[i][j][k];
+                }
+            }
+        }
+    }
+    ratio = min/max;
+    return ratio;
+}
