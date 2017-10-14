@@ -95,11 +95,36 @@ int main(int argc, char** argv)
                 } 
             }
         }//end of for loops
-        ratio = findRatio(A,N);
-        //printf(time + "\n");
-        //printf(ratio);
+        
+        double sumval = 0.0;
+        double max = A[0][0][0];
+        double min = A[0][0][0];
+    
+        for(i=0;i<N;i++)
+        {
+            for(j=0;j<N;j++)
+            {
+                for(k=0;k<N;k++)
+                {
+                    if(max < A[i][j][k])
+                    {
+                        max = A[i][j][k];
+                    }
+                    if(min > A[i][j][k])
+                    {
+                        min = A[i][j][k];
+                    }
+                    sumval += A[i][j][k];
+                }
+            }
+        }
+        ratio = min/max;
+
+        printf("time=%f",time);
+        printf(" ratio=%f\n",ratio);
+        printf(" sumval=%f\n",sumval);
     }
-    printf("The last element is %f\n",A[N-1][N-1][N-1]);
+    printf("The box equilibrated in %f, seconds of simulated time.",time);
 
 //    int tacc = 0;
 //    double Msize = 10.0;
@@ -120,18 +145,19 @@ double findRatio(double ***A, int N)
     int i,j,k;
     double max = A[0][0][0];
     double min = A[0][0][0];
-    double ratio;
+    double ratio = min/max;
+    printf("%f\n",max);
     for(i=0;i<N;i++)
     {
         for(j=0;j<N;j++)
         {
             for(k=0;k<N;k++)
             {
-                if(A[i][j][k] > max) 
+                if(max < A[i][j][k]) 
                 {
                     max = A[i][j][k];
                 }
-                if(A[i][j][k] < min)
+                if(min > A[i][j][k])
                 {
                     min = A[i][j][k];
                 }
@@ -139,5 +165,6 @@ double findRatio(double ***A, int N)
         }
     }
     ratio = min/max;
+    //printf("%f\n",ratio);
     return ratio;
 }
