@@ -1,101 +1,49 @@
 #!/usr/bin/python
-def Cma(*list):
-    length = len(list)
-    sorted(list, reverse=True)
-#    print list[0]
-    return list[0]
-
-def Cmi(*list):
-    length = len(list)
-#    print list[length-1]
-    return list[length-1]
-
-tacc=0.0
-Lroom=5
-Msize=10.0
-urms=250.0
-D=0.175
-elementList = []
-tstep=(Lroom/urms)/Msize
-h=Lroom/Msize
-Dterm = (D*tstep)/(h*h)
-fc=10 #sets the first cube to 100
-
 N=10
-L = []
-A = [[[0 for n in range (N)] for m in range(N)] for l in range(N)]
+R=float(N)
+A = [[[0 for k in range (N)] for j in range(N)] for i in range(N)]
 #set all cubes = 0
-for l in range(0,N):
-    for m in range(0,N):
-        for n in range(0,N):
-            if l==0 and m==0 and n==0:
-                A[0][0][0] = 10
+for i in range(0,N):
+    for j in range(0,N):
+        for k in range(0,N):
+            if i==0 and j==0 and k==0:
+                A[0][0][0] = 1.0e21
             else:
-                A[l][m][n] = 0.0
-            L.append(A[l][m][n])
-#            print "A[%d][%d][%d] = %d" % (i, j, k, A[i][j][k])
-ma = 0.0
-ma = Cma(*L)
-mi = Cmi(*L)
-x = mi/float(ma)
-print "Cmax =", ma
-print "Cmin =", mi
-print "Cmin/Cmax =", x
-l=0
-m=0
-n=0
-i=0
-j=0
-k=0
-while x <= .99:
-    tacc = tacc + tstep
-    #keeps position in the room
-    for l in range(l,N):
-        for m in range(m,N):
-            for n in range(n,N):
-                #access each volume cube from here
-                #print A[0][0][0]
-               # i=l
-               # j=m
-               # k=n
-                for i in range(i,N):
-                    for j in range(j,N):
-                        for k in range(k,N):
-                            if (l==i and m==j and n==k+1) or (l==i and m==j and n==k-1) or (l==i and m==j+1 and n==k) or (l==i and m==j-1 and n==k) or (l==i+1 and m==j and n==k) or (l==i-1 and m==j and n==k):
-                                temp = (A[l][m][n]-A[i][j][k])*Dterm
-                                A[l][m][n] = A[l][m][n] - temp
-                                A[i][j][k] = A[i][j][k] + temp
+                A[i][j][k] = 0
 
-    s = 0.0
-    for a in range(0,N):
-        for b in range(0,N):
-            for c in range(0,N):
-                elementList.append(A[a][b][c])
-                s = s + A[a][b][c]
-    ma = Cma(*elementList)
-    mi = Cmi(*elementList)
-    x = mi/float(ma)
-    print "x =", x
-    print "sum =", s
-                #            if i > 0 and j > 0:
-                #                A[i][j][k] = A[i-1][j-1][k]-2
-                #            elif j > 0:
-                #                A[i][j][k] = A[i][j-1][k]-1
-                #            elif i > 0:
-                #                A[i][j][k] = A[i-1][j][k]-1
-                #            else:
-                #                A[i][j][k] = i*N*N-j*N-k-1+fc
-                #                A[i][j][k] = A[i][j][k]+1
-                #        elementList.append(A[i][j][k])
-                #print "A[%d][%d][%d] = %d" % (i, j, k, A[i][j][k])
-                #ma = Cma(*elementList)
-                #mi = Cmi(*elementList)
-                #x = mi/float(ma)
-                #print "Cmax =", ma
-                #print "Cmin =", mi
-                #print "Cmin/Cmax =", x
-                #elementList = []
-    #ma = Cma(*elementList)
-    #mi = Cmi(*elementList)
-    #x = mi/float(ma)
-    #print x
+D=0.175
+roomD=5
+speed=250.0
+timestep=(roomD/speed)/R
+disblock=roomD/R
+DTerm=D*timestep/(disblock*disblock)
+time=0.0
+ratio=0.0
+
+while ratio <= .99:
+    for i in range(0,N):
+        for j in range(0,N):
+            for k in range(0,N):
+                for l in range(0,N):
+                    for m in range(0,N):
+                        for n in range(0,N):
+                            if (i==l and j==m and k==n+1) or (i==l and j==m and k==n-1) or (i==l and j==m+1 and k==n) or (i==l and j==m-1 and k==n) or (i==l+1 and j==m and k==n) or (i==l-1 and j==m and k==n):
+                                change=(A[i][j][k]-A[l][m][n])*DTerm
+                                A[i][j][k]=A[i][j][k]-change
+                                A[l][m][n]=A[l][m][n]+change
+    time=time+timestep
+    sumval=0.0
+    maxval=A[0][0][0]
+    minval=A[0][0][0]
+    for i in range(0,N):
+        for j in range(0,N):
+            for k in range(0,N):
+                if maxval<A[i][j][k]:
+                    maxval=A[i][j][k]
+                if minval>A[i][j][k]:
+                    minval=A[i][j][k]
+                sumval=sumval+A[i][j][k]
+
+    ratio=minval/maxval
+    print time, ratio, sumval
+print "Box equilibrated in ",time," seconds of simulated time."
