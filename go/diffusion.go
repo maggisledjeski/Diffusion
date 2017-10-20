@@ -1,5 +1,5 @@
 package main
-
+// Go code checked on 10/20/17
 import "fmt"
 
 func main() {
