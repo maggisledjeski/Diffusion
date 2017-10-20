@@ -1,5 +1,7 @@
 using System;
 
+// Csharp checked on 10/20/17
+
 public class Diffusion
 {
     static public void Main()
