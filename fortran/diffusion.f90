@@ -44,7 +44,7 @@ end do
 
 !cube(0,0,0)=1000000000000000000000_real64
 cube(0,0,0)=1.0e21!1.0*10.0**21!1.0e21
-cube(mdim,mdim,mdim)=10
+!cube(mdim,mdim,mdim)=10
 !print *, cube(mdim,mdim,mdim)
 do while (ratio<0.99)
     do i=1,mdim
@@ -63,9 +63,9 @@ do while (ratio<0.99)
                             if ((i.eq.l .and. j.eq.m .and. k.eq.n-1).or.(i.eq.l .and. j.eq.m .and. k.eq.n+1)&
                                 .or.(i.eq.l .and. j.eq.m+1 .and. k.eq.n).or.(i.eq.l .and. j.eq.m-1 .and. k.eq.n)&
                                 .or.(i.eq.l+1 .and. j.eq.m .and. k.eq.n).or.(i.eq.l-1 .and. j.eq.m .and. k.eq.n)) then
-                                change=(cube(i,j,k)-cube(l,m,n))*DTerm
-                                cube(i,j,k)=cube(i,j,k)-change
-                                cube(l,m,n)=cube(l,m,n)+change
+                                change=(cube(k,j,i)-cube(n,m,l))*DTerm
+                                cube(k,j,i)=cube(k,j,i)-change
+                                cube(n,m,l)=cube(n,m,l)+change
                             end if
                         end do
                     end do
@@ -94,11 +94,11 @@ do while (ratio<0.99)
 !        end if
         do j=1,mdim
             do k=1,mdim
-                if (maxelement<cube(i,j,k)) then!sumval=sumval+cube(i,j,k)
-                    maxelement=cube(i,j,k)
+                if (maxelement<cube(k,j,i)) then!sumval=sumval+cube(i,j,k)
+                    maxelement=cube(k,j,i)
                 end if
-                if (minelement>cube(i,j,k)) then
-                    minelement=cube(i,j,k)
+                if (minelement>cube(k,j,i)) then
+                    minelement=cube(k,j,i)
                 end if
                 !sumval=sumval+cube(i,j,k)
             end do
