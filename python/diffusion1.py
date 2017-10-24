@@ -2,15 +2,8 @@
 N=10
 R=float(N)
 A = [[[0 for k in range (N)] for j in range(N)] for i in range(N)]
-#set all cubes = 0
-for i in range(0,N):
-    for j in range(0,N):
-        for k in range(0,N):
-            if i==0 and j==0 and k==0:
-                A[0][0][0] = 1.0e21
-            else:
-                A[i][j][k] = 0
 
+A[0][0][0]=1.0e21
 D=0.175
 roomD=5
 speed=250.0
@@ -24,13 +17,33 @@ while ratio <= .99:
     for i in range(0,N):
         for j in range(0,N):
             for k in range(0,N):
-                for l in range(0,N):
-                    for m in range(0,N):
-                        for n in range(0,N):
-                            if (i==l and j==m and k==n+1) or (i==l and j==m and k==n-1) or (i==l and j==m+1 and k==n) or (i==l and j==m-1 and k==n) or (i==l+1 and j==m and k==n) or (i==l-1 and j==m and k==n):
-                                change=(A[i][j][k]-A[l][m][n])*DTerm
-                                A[i][j][k]=A[i][j][k]-change
-                                A[l][m][n]=A[l][m][n]+change
+                if k+1 < N and k-1 >= 0:
+                    if A[i][j][k+1] != A[i][j][k]:
+                        change=(A[i][j][k]-A[i][j][k+1])*DTerm
+                        A[i][j][k]=A[i][j][k]-change
+                        A[i][j][k+1]=A[i][j][k+1]+change
+                    if A[i][j][k-1] != A[i][j][k]:
+                        change=(A[i][j][k]-A[i][j][k-1])*DTerm
+                        A[i][j][k]=A[i][j][k]-change
+                        A[i][j][k-1]=A[i][j][k-1]+change
+                if j+1 < N and j-1 >= 0:
+                    if A[i][j+1][k] != A[i][j][k]:
+                        change=(A[i][j][k]-A[i][j+1][k])*DTerm
+                        A[i][j][k]=A[i][j][k]-change
+                        A[i][j+1][k]=A[i][j+1][k]+change
+                    if A[i][j-1][k] != A[i][j][k]:
+                        change=(A[i][j][k]-A[i][j-1][k])*DTerm
+                        A[i][j][k]=A[i][j][k]-change
+                        A[i][j-1][k]=A[i][j-1][k]+change
+                if i+1 < N and i-1 >= 0:
+                    if A[i+1][j][k] != A[i][j][k]:
+                        change=(A[i][j][k]-A[i+1][j][k])*DTerm
+                        A[i][j][k]=A[i][j][k]-change
+                        A[i+1][j][k]=A[i+1][j][k]+change
+                    if A[i-1][j][k] != A[i][j][k]:
+                        change=(A[i][j][k]-A[i-1][j][k])*DTerm
+                        A[i][j][k]=A[i][j][k]-change
+                        A[i-1][j][k]=A[i-1][j][k]+change
     time=time+timestep
     sumval=0.0
     maxval=A[0][0][0]
