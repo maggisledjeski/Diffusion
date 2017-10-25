@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// C Checked on 10/20/17
+//
+// YOU really should look into the fmax and fmin function to simplify and speed up your program
+
+
 double findRatio(double ***A, int N);
 
 int main(int argc, char** argv)
