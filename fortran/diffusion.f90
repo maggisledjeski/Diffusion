@@ -1,5 +1,7 @@
 PROGRAM diffusion
 
+! Code checked on 10/25/17
+
 USE diffusion_mod
 real (kind=4)::cubesum
 integer::mem_stat
