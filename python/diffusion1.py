@@ -3,6 +3,8 @@ N=10
 R=float(N)
 A = [[[0 for k in range (N)] for j in range(N)] for i in range(N)]
 
+#Python checked on 10/25/17
+
 A[0][0][0]=1.0e21
 D=0.175
 roomD=5
