@@ -6,14 +6,40 @@ USE diffusion_mod
 real (kind=4)::cubesum
 integer::mem_stat
 
+400
+!partition?
+print*,"partition? Please type either 'Y' or 'N' and press enter"
+read*,answer
+!if neither of these are typed ask again
+!look into toLowerCase
+if answer=='Y'
+   goto 200
+!elseif answer=='N'
+!   goto 100
+!else
+!   goto 400
+!Y= go to statement where it asks for cube size and calls the subroutine that
+!does partition
+!jumps to another label after the subroutine call
+!N= go to statement where it asks for the cube size and calls fill_cube
+100
 print*,"How big is the cube?"
 read*,mdim
-!mdim=10
+!if mdim>100
+!   goto 100
 call fill_cube
 cubesum=sum(cube)
-
 print*,cubesum
-
+goto 300
+200
+print*,"How big is the cube?"
+read*,mdim
+!if mdim>100
+!   goto 200
+!call partition subroutine
+!cubesum=sum(cube)
+print*,cubesum
+300
 deallocate(cube,STAT=mem_stat)
 if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
 
