@@ -6,6 +6,26 @@ public class Diffusion
 {
     static public void Main()
     {
+        bool validAnswer = false;
+        int p;
+        
+        while (!validAnswer) 
+        {
+            Console.WriteLine("To run program with partition, enter 1, otherwise enter 2: ");
+            validAnswer = int.TryParse(Console.ReadLine(), out p); 
+            if(p==2 || p==1)
+            {
+                if(p==2)
+                {
+                    goto notPartition;
+                }
+            }
+            else
+            {
+                validAnswer=false;
+            }
+        }
+              
         const int N = 10;
         double[,,] A = new double[N,N,N];
         int i,j,k,l,m,n;
@@ -108,6 +128,8 @@ public class Diffusion
 
         } //end of while loop
         Console.WriteLine("Box equilibrated in " + time + " seconds of simulated time.");
+        notPartition:
+            Console.WriteLine("not partition");
     }
 }
 
