@@ -87,6 +87,10 @@ public class Diffusion
                     {
                         A[0,0,0] = 1.0e21;
                     }
+                    if(j >= N/2 && k == N/2)
+                    {
+                        A[i,j,k] = wall;
+                    }
                     else
                     {
                         A[i,j,k] = 0.0;
