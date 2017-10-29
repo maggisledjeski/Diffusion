@@ -10,6 +10,7 @@ public class Diffusion
         const int N = 10;                               //maxsize
         double[,,] A = new double[N,N,N];               //cube declaration of size NxNxN
         int i,j,k,l,m,n;
+        int wall = -100;                                //the value/concentration of a wall block
         double change;                                  //is the change of concentrations between blocks
         double D = 0.175;                               //diffusion coefficient 
         double room = 5;                                //room dimension is 5 meters
@@ -30,14 +31,16 @@ public class Diffusion
         {
             Console.WriteLine("To run program with partition, enter 1, otherwise enter 2: ");
             validAnswer = int.TryParse(Console.ReadLine(), out p); 
-            if(p==2 || p==1)
+            if(p==1 || p==2)
             {
                 if(p==2)
                 {
+                    Console.WriteLine("Running program without a partition...");
                     goto notPartition;
                 }
                 else
                 {
+                    Console.WriteLine("Running program with a partition...");
                     goto Partition;
                 }
             }
@@ -46,8 +49,33 @@ public class Diffusion
                 validAnswer=false;
             }
         }
-             
-        //initializing the initial values in the cube      
+        
+        //initalizing the inital value and the walls in the cube
+        Partition:
+        for(i=0;i<N;i++)
+        {
+            for(j=0;j<N;j++)
+            {
+                for(k=0;k<N;k++)
+                {
+                    if(i==0 && j==0 && k==0)
+                    {
+                        A[0,0,0] = 1.0e21;
+                    }
+                    else if(j/2 >= N/2 && k/2 >= N/2)
+                    {
+                        A[i,j,k] = wall;
+                    }
+                    else
+                    {
+                        A[i,j,k] = 0.0;
+                    }
+                }
+            }
+        }
+        goto Start;
+
+        //initializing the initial value in the cube     
         notPartition:
         for(i=0;i<N;i++)
         {
@@ -66,7 +94,8 @@ public class Diffusion
                 }
             }
         }
-
+        
+        Start:
         //goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
         //the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
         //of the gas changes as time continues
@@ -128,8 +157,6 @@ public class Diffusion
 
         } //end of while loop
         Console.WriteLine("Box equilibrated in " + time + " seconds of simulated time.");
-        Partition:
-            Console.WriteLine("partition");
     }
 }
 
