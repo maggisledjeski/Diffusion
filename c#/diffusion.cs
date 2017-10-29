@@ -6,7 +6,24 @@ public class Diffusion
 {
     static public void Main()
     {
-        bool validAnswer = false;
+        //Varibles that are the same for setting up the cube with or without the partition
+        const int N = 10;                               //maxsize
+        double[,,] A = new double[N,N,N];               //cube declaration of size NxNxN
+        int i,j,k,l,m,n;
+        double change;                                  //is the change of concentrations between blocks
+        double D = 0.175;                               //diffusion coefficient 
+        double room = 5;                                //room dimension is 5 meters
+        double speed = 250.0;                           //speed of gas molecule based on 100 g/mol gas at RT
+        double timestep = (room/speed)/N;               //basis for spatial stepsizes with respect to position in seconds
+        double disblock = room/N;                       //is the distance between blocks
+        double DTerm = D*timestep/(disblock*disblock);  //
+        double time = 0.0;
+        double ratio = 0.0;
+
+        Console.WriteLine("Attempting to allocate " + (N*N*N) + " Doubles");
+        
+        //User input: enter 1 to run with a partition, enter 2 to run without
+        bool validAnswer = false; //used for choosing if the user wants a partition
         int p;
         
         while (!validAnswer) 
@@ -19,29 +36,19 @@ public class Diffusion
                 {
                     goto notPartition;
                 }
+                else
+                {
+                    goto Partition;
+                }
             }
             else
             {
                 validAnswer=false;
             }
         }
-              
-        const int N = 10;
-        double[,,] A = new double[N,N,N];
-        int i,j,k,l,m,n;
-        double change;
-        Console.WriteLine("Attempting to allocate " + (N*N*N) + " Doubles");
-        for(int a = 0;a < N; a++)
-        {
-            for(int b = 0;b < N; b++)
-            {
-                for(int c = 0;c < N; c++)
-                {
-                    A[a,b,c]=a*N*N+b*N+c+1;
-                }
-            }
-        }
-        
+             
+        //initializing the initial values in the cube      
+        notPartition:
         for(i=0;i<N;i++)
         {
             for(j=0;j<N;j++)
@@ -60,18 +67,9 @@ public class Diffusion
             }
         }
 
-        double D = 0.175;
-        double room = 5;
-        double speed = 250.0;
-        double timestep = (room/speed)/N;
-        double disblock = room/N;
-        double DTerm = D*timestep/(disblock*disblock);
-//        int pass = 0;
-        double time = 0.0;
-//        double Cmin;
-//        double Cmax;
-        double ratio = 0.0;
-
+        //goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
+        //the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
+        //of the gas changes as time continues
         while(ratio < 0.99)
         {
             time = time + timestep;
@@ -99,11 +97,13 @@ public class Diffusion
                     }
                 }
             } //end of for loops
-
-            double sumval = 0.0;
-            double max = A[0,0,0];
-            double min = A[0,0,0];
-
+            
+            //check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
+            //determines the new ratio after 1 step: divides the new min by the new max
+            double sumval = 0.0;    //sum of the concentrations of every block in the cube
+            double max = A[0,0,0];  //block with the highest concentration
+            double min = A[0,0,0];  //block with the lowest concentration
+            
             for(i=0;i<N;i++)
             {
                 for(j=0;j<N;j++)
@@ -112,11 +112,11 @@ public class Diffusion
                     {
                         if(max < A[i,j,k])
                         {
-                            max = A[i,j,k];
+                            max = A[i,j,k]; //new max if a bigger concentration is found within the cube
                         }
                         if(min > A[i,j,k])
                         {
-                            min = A[i,j,k];
+                            min = A[i,j,k]; //new min if a smaller concentration is found within the cube
                         }
                         sumval += A[i,j,k];
                     }
@@ -128,8 +128,8 @@ public class Diffusion
 
         } //end of while loop
         Console.WriteLine("Box equilibrated in " + time + " seconds of simulated time.");
-        notPartition:
-            Console.WriteLine("not partition");
+        Partition:
+            Console.WriteLine("partition");
     }
 }
 
