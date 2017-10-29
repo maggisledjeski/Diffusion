@@ -1,11 +1,24 @@
 package main
 // Go code checked on 10/20/17
-import "fmt"
+import (
+    "fmt"
+    "strings"
+)
 
 func main() {
 
-   fmt.Println("hello irma")
-
+   fmt.Print("To run program with a partition please enter 'yes'")
+    var input string
+    var lowerinput string
+    fmt.Scanln(&input)
+    lowerinput = strings.ToLower(input)
+    fmt.Println(strings.ToLower(input))
+    switch lowerinput {
+        case "yes":
+            fmt.Println("will run with a partition...")
+        default:
+            fmt.Println("will run without a partition...")
+    
     const N int = 10
     var A[N][N][N]float64
     var i,j,k,l,m,n int
@@ -71,5 +84,6 @@ func main() {
         ratio = min/max
         fmt.Printf("%g %g %g\n", time, ratio,sumval)
     } 
-    fmt.Printf("Box equilibrated in %g seconds of simulated time.\n", time)
+    fmt.Printf("Box equilibrated in %g seconds of simulated time without a partition.\n", time)
+    }
 }
