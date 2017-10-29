@@ -6,8 +6,21 @@ import (
 )
 
 func main() {
+    const N int = 10
+    var A[N][N][N]float64
+    var i,j,k,l,m,n int
 
-   fmt.Print("To run program with a partition please enter 'yes'")
+    x := 10.0 //N but a double
+    D := 0.175
+    room := 5.0
+    speed := 250.0
+    timestep := (room/speed)/x
+    disblock := room/x
+    DTerm := D*timestep/(disblock*disblock)
+    time := 0.0
+    ratio := 0.0
+
+    fmt.Print("To run program with a partition please enter 'yes'")
     var input string
     var lowerinput string
     fmt.Scanln(&input)
@@ -16,12 +29,35 @@ func main() {
     switch lowerinput {
         case "yes":
             fmt.Println("will run with a partition...")
+            for i=0; i < N; i++ {
+                for j=0; j<N; j++ {
+                    for k=0; k<N; k++ {
+                        if i==0 && j==0 && k==0 {
+                            A[0][0][0] = 1.0e21
+                        } 
+                        if j>=N/2 && k==N/2 {
+                            A[i][j][k] = -100
+                        } else {
+                            A[i][j][k] = 0.0
+                        }
+                    }
+                }
+            }
+//            for i=0; i < N; i++ {
+//                for j=0; j<N; j++ {
+//                    for k=0; k<N; k++ {
+//                        fmt.Print(A[i][j][k] );
+//                    }
+//                    fmt.Println();
+//                }
+//                fmt.Println();
+//            }
         default:
             fmt.Println("will run without a partition...")
     
-    const N int = 10
-    var A[N][N][N]float64
-    var i,j,k,l,m,n int
+//    const N int = 10
+//    var A[N][N][N]float64
+//    var i,j,k,l,m,n int
     for i=0; i < N; i++ {
         for j=0; j<N; j++ {
             for k=0; k<N; k++ {
@@ -34,15 +70,15 @@ func main() {
         }
     }
     
-    x := 10.0 //N but a double
-    D := 0.175
-    room := 5.0
-    speed := 250.0
-    timestep := (room/speed)/x
-    disblock := room/x
-    DTerm := D*timestep/(disblock*disblock)
-    time := 0.0
-    ratio := 0.0
+//    x := 10.0 //N but a double
+//    D := 0.175
+//    room := 5.0
+//    speed := 250.0
+//    timestep := (room/speed)/x
+//    disblock := room/x
+//    DTerm := D*timestep/(disblock*disblock)
+//    time := 0.0
+//    ratio := 0.0
 
     for ratio<0.99 {
         time = time + timestep
