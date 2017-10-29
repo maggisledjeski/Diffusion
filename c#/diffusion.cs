@@ -117,8 +117,12 @@ public class Diffusion
                             for(m=0;m<N;m++)
                             {
                                 for(n=0;n<N;n++)
-                                {
-                                    if(((i==l)&&(j==m)&&(k==n+1))||((i==l)&&(j==m)&&(k==n-1))||((i==l)&&(j==m+1)&&(k==n))||((i==l)&&(j==m-1)&&(k==n))||((i==l+1)&&(j==m)&&(k==n))||((i==l-1)&&(j==m)&&(k==n)))
+                                {   
+                                    if(A[l,m,n] == wall)
+                                    {
+                                        goto isWall;
+                                    }
+                                    if(((i==l)&&(j==m)&&(k==n+1)&&(A[l,m,n+1]!=wall))||((i==l)&&(j==m)&&(k==n-1)&&(A[l,m,n-1]!=wall))||((i==l)&&(j==m+1)&&(k==n)&&(A[l,m+1,n]!=wall))||((i==l)&&(j==m-1)&&(k==n)&&(A[l,m-1,n]!=wall))||((i==l+1)&&(j==m)&&(k==n)&&(A[l+1,m,n]!=wall))||((i==l-1)&&(j==m)&&(k==n)&&(A[l-1,m,n]!=wall)))
                                     {
                                         change = (A[i,j,k]-A[l,m,n])*DTerm;
                                         A[i,j,k] = A[i,j,k] - change;
@@ -130,7 +134,7 @@ public class Diffusion
                     }
                 }
             } //end of for loops
-            
+            isWall:
             //check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
             //determines the new ratio after 1 step: divides the new min by the new max
             double sumval = 0.0;    //sum of the concentrations of every block in the cube
@@ -143,23 +147,26 @@ public class Diffusion
                 {
                     for(k=0;k<N;k++)
                     {
-                        if(max < A[i,j,k])
+                        if(A[i,j,k] != wall)
                         {
-                            max = A[i,j,k]; //new max if a bigger concentration is found within the cube
+                            if(max < A[i,j,k])
+                            {
+                                max = A[i,j,k]; //new max if a bigger concentration is found within the cube
+                            }
+                            if(min > A[i,j,k])
+                            {
+                                min = A[i,j,k]; //new min if a smaller concentration is found within the cube
+                            }
+                            sumval += A[i,j,k];
                         }
-                        if(min > A[i,j,k])
-                        {
-                            min = A[i,j,k]; //new min if a smaller concentration is found within the cube
-                        }
-                        sumval += A[i,j,k];
                     }
                 }
             }
             ratio = min/max;
-
             Console.WriteLine(time + " " + ratio + " " + sumval);
+ //           isWall:
 
-        } //end of while loop
+       } //end of while loop
         Console.WriteLine("Box equilibrated in " + time + " seconds of simulated time.");
     }
 }
