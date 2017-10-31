@@ -11,6 +11,7 @@
 (defvar dterm (/ (* D timestep) (* disblock disblock))) ;
 (defvar R 0.0)                                          ;the ratio of the min concentration/max concentration in A
 (defvar tim 0.0)                                        ;keeps track of simulation time
+(defvar change)
 
 (setf A(make-array'(10 10 10)))
 
@@ -27,11 +28,33 @@
 (setf (aref A 0 0 0)'100)
 
 ;prints the mutli array
-(dotimes (i 10)
-    (dotimes (j 10)
-        (dotimes (k 10)
-            (print (aref A i j k))
+;(dotimes (i 10)
+;    (dotimes (j 10)
+;        (dotimes (k 10)
+;            (print (aref A i j k))
 ;            (write-line "string") ;\n affect after write-line
+;        )
+;    )
+;)
+
+(loop
+    (dotimes (i 10)
+        (dotimes (j 10)
+            (dotimes (k 10)
+                (dotimes (l 10)
+                    (dotimes (m 10)
+                        (dotimes (n 10)
+                            (if or (and (= i l) (= j m) (= k (+ n 1))) (and (= i l) (= j m) (= k (- n 1))) (and (= i l) (= j (+ m 1)) (= k n)) (and (= i l) (= j (- m 1)) (= k n)) (and (= i (+ l 1)) (= j m) (= k n)) (and (= i (- l 1)) (= j m) (= k n))
+                                (setf change (* (- (aref A i j k) (aref A l m n)) dterm))
+                                (setf (aref A i j k) (- (aref A i j k) change))
+                                (setf (aref A l m n) (+ (aref A l m n) change)))
+;                 (if and (< (+ k 1) N) (>= (- k 1) 0)
+                        )
+                    )
+                )
+            )
         )
     )
+    (when (>= R 0.99) (return R))
 )
+
