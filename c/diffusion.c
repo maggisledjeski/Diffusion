@@ -91,8 +91,8 @@ int main(int argc, char** argv)
             {
                 for(k=0;k<N;k++)
                 {
-                    max = fmaxf(max,A[i][j][k]);
-                    min = fminf(min,A[i][j][k]);
+                    max = fmax(max,A[i][j][k]);
+                    min = fmin(min,A[i][j][k]);
 //                    if(max < A[i][j][k])
 //                    {
 //                        max = A[i][j][k];
