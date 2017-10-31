@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 // C Checked on 10/20/17
 //
 // YOU really should look into the fmax and fmin function to simplify and speed up your program
@@ -11,17 +11,18 @@ double findRatio(double ***A, int N);
 int main(int argc, char** argv)
 {
     const int N = 10;
+    const float x = 10.0;
     int i,j,k,l,m,n;
-    double change;
+    float change;
     int fc = 10;
-    double*** A = malloc(N*sizeof(double**));
+    float*** A = malloc(N*sizeof(float***));
 
     for(i=0;i<N;i++)
     {
-        A[i] = malloc(N*sizeof(double*));
+        A[i] = malloc(N*sizeof(float*));
         for(j=0;j<N;j++)
         {
-            A[i][j] = malloc(N*sizeof(double));
+            A[i][j] = malloc(N*sizeof(float));
         }
     }
     //set 3d array to 0 except for first cube
@@ -37,23 +38,20 @@ int main(int argc, char** argv)
                 }
                 else
                 {
-                    A[i][j][k] = 0;
+                    A[i][j][k] = 0.0;
                 }
             }
         }
     }
     
-    double D = 0.175;
-    double room = 5;
-    double speed = 250.0;
-    double timestep = (room/speed)/N;
-    double disblock = room/N;
-    double DTerm = D*timestep/(disblock*disblock);
-    int pass = 0;
-    double time = 0.0;
-    double Cmin;
-    double Cmax;
-    double ratio = 0.0;
+    float D = 0.175;
+    float room = 5.0;
+    float speed = 250.0;
+    float timestep = (room/speed)/x;
+    float disblock = room/x;
+    float DTerm = D*timestep/(disblock*disblock);
+    float time = 0.0;
+    float ratio = 0.0;
 
     while(ratio < 0.99)
     {
@@ -79,31 +77,13 @@ int main(int argc, char** argv)
                             }
                         }
                     }
-//                if(i>0 && j>0)
-//                {
-//                    A[i][j][k] = A[i-1][j-1][k]-2;
-//                }
-//                else if(j > 0)
-//                {
-//                    A[i][j][k] = A[i][j-1][k]-1;
-//                }
-//               else if(i > 0)
-//                {
-//                    A[i][j][k] = A[i-1][j][k]-1;
-//                }
-//                else
-//                {
-//                    A[i][j][k] = i*N*N-j*N-k-1.0+fc;
-//                    A[i][j][k] = A[i][j][k]+1.0;
-//                }
-//                printf("%f\t",A[i][j][k]);
                 } 
             }
         }//end of for loops
         
-        double sumval = 0.0;
-        double max = A[0][0][0];
-        double min = A[0][0][0];
+        float sumval = 0.0;
+        float max = A[0][0][0];
+        float min = A[0][0][0];
     
         for(i=0;i<N;i++)
         {
@@ -111,14 +91,16 @@ int main(int argc, char** argv)
             {
                 for(k=0;k<N;k++)
                 {
-                    if(max < A[i][j][k])
-                    {
-                        max = A[i][j][k];
-                    }
-                    if(min > A[i][j][k])
-                    {
-                        min = A[i][j][k];
-                    }
+                    max = fmaxf(max,A[i][j][k]);
+                    min = fminf(min,A[i][j][k]);
+//                    if(max < A[i][j][k])
+//                    {
+//                        max = A[i][j][k];
+//                    }
+//                    if(min > A[i][j][k])
+//                    {
+//                        min = A[i][j][k];
+//                    }
                     sumval += A[i][j][k];
                 }
             }
@@ -130,18 +112,6 @@ int main(int argc, char** argv)
         printf(" sumval=%f\n",sumval);
     }
     printf("The box equilibrated in %f, seconds of simulated time.",time);
-
-//    int tacc = 0;
-//    double Msize = 10.0;
-//    double Lroom = 5.0;
-//    double h = Lroom/Msize;
-//    double tstep = (Lroom/urms)/Msize;
-//    double Cmin;
-//    double Cmax;
-//    while(Cmin/Cmax <= 0.99)
-//    {
-//        tacc = tacc + tstep
-
     free(A);
 }
 
