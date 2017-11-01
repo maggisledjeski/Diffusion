@@ -60,6 +60,7 @@ func main() {
 //            }
             
             for ratio<0.99 {
+                fmt.Printf("%d %d %d\n", i, j, k)
                 time = time + timestep
                 for i=0; i<N; i++ {
                     for j=0; j<N; j++ {
@@ -72,6 +73,7 @@ func main() {
                                                 change := (A[i][j][k]-A[l][m][n])*DTerm;
                                                 A[i][j][k] = A[i][j][k] - change;
                                                 A[l][m][n] = A[l][m][n] + change;
+                                                fmt.Printf("%d %d %d %d %d %d\n", i, j, k, l, m, n)
                                             }
                                         }
                                     }
@@ -79,8 +81,8 @@ func main() {
                             }
                         }
                     }
-                }   //end of fors
-                
+                } 
+                fmt.Printf("%d %d %d\n", i, j, k)
                 sumval := 0.0
                 max := A[0][0][0]
                 min := A[0][0][0]
