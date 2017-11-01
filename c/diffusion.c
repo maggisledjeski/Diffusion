@@ -35,97 +35,95 @@ int main(int argc, char** argv)
             break;
         case 'n':
             printf("This program will run without a partition...\n");
-            break;
-        default:
-            printf("invalid input\n");
-    }
-
-
-
-    //Allocating the space for the 3d array
-    for(i=0;i<N;i++)
-    {
-        A[i] = malloc(N*sizeof(float*));
-        for(j=0;j<N;j++)
-        {
-            A[i][j] = malloc(N*sizeof(float));
-        }
-    }
-
-    //set 3d array to 0 except for first cube which is set to 1.0e21
-    for(i=0;i<N;i++)
-    {
-        for(j=0;j<N;j++)
-        {
-            for(k=0;k<N;k++)
+            //Allocating the space for the 3d array
+            for(i=0;i<N;i++)
             {
-                if(i==0 && j==0 && k==0)
+                A[i] = malloc(N*sizeof(float*));
+                for(j=0;j<N;j++)
                 {
-                    A[0][0][0] = 1.0e21;
-                }
-                else
-                {
-                    A[i][j][k] = 0.0;
+                    A[i][j] = malloc(N*sizeof(float));
                 }
             }
-        }
-    }
-    
-    //goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
-    //the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
-    //of the gas changes as time continues
-    while(ratio < 0.99)
-    {
-        time = time + timestep;
-        for(i=0;i<N;i++)
-        {
-            for(j=0;j<N;j++)
+            
+            //set 3d array to 0 except for first cube which is set to 1.0e21
+            for(i=0;i<N;i++)
             {
-                for(k=0;k<N;k++)
+                for(j=0;j<N;j++)
                 {
-                    for(l=0;l<N;l++)
+                    for(k=0;k<N;k++)
                     {
-                        for(m=0;m<N;m++)
+                        if(i==0 && j==0 && k==0)
                         {
-                            for(n=0;n<N;n++)
+                            A[0][0][0] = 1.0e21;
+                        }
+                        else
+                        {
+                            A[i][j][k] = 0.0;
+                        }
+                    }
+                }
+            }
+            
+            //goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
+            //the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
+            //of the gas changes as time continues
+            while(ratio < 0.99)
+            {
+                time = time + timestep;
+                for(i=0;i<N;i++)
+                {
+                    for(j=0;j<N;j++)
+                    {
+                        for(k=0;k<N;k++)
+                        {
+                            for(l=0;l<N;l++)
                             {
-                                if(((i==l)&&(j==m)&&(k==n+1))||((i==l)&&(j==m)&&(k==n-1))||((i==l)&&(j==m+1)&&(k==n))||((i==l)&&(j==m-1)&&(k==n))||((i==l+1)&&(j==m)&&(k==n))||((i==l-1)&&(j==m)&&(k==n)))
+                                for(m=0;m<N;m++)
                                 {
-                                    change = (A[i][j][k]-A[l][m][n])*DTerm;
-                                    A[i][j][k] = A[i][j][k] - change;
-                                    A[l][m][n] = A[l][m][n] + change;
+                                    for(n=0;n<N;n++)
+                                    {
+                                        if(((i==l)&&(j==m)&&(k==n+1))||((i==l)&&(j==m)&&(k==n-1))||((i==l)&&(j==m+1)&&(k==n))||((i==l)&&(j==m-1)&&(k==n))||((i==l+1)&&(j==m)&&(k==n))||((i==l-1)&&(j==m)&&(k==n)))
+                                        {
+                                            change = (A[i][j][k]-A[l][m][n])*DTerm;
+                                            A[i][j][k] = A[i][j][k] - change;
+                                            A[l][m][n] = A[l][m][n] + change;
+                                        }      
+                                    }
                                 }
                             }
                         }
                     }
-                } 
-            }
-        }
-        
-        //check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
-        //determines the new ratio after 1 step: divides the new min by the new max
-        float sumval = 0.0;         //sum of the concentrations of every block in the cube
-        float max = A[0][0][0];     //block with the highest concentration
-        float min = A[0][0][0];     //block with the lowest concentration
-    
-        for(i=0;i<N;i++)
-        {
-            for(j=0;j<N;j++)
-            {
-                for(k=0;k<N;k++)
-                {
-                    max = fmax(max,A[i][j][k]);     //fmax returns the bigger concentratio and sets it as the max value
-                    min = fmin(min,A[i][j][k]);     //fmin returns the smaller concentratio and sets it as the min value
-                    sumval += A[i][j][k];           
                 }
-            }
-        }
-        ratio = min/max;
+                
+                //check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
+                //determines the new ratio after 1 step: divides the new min by the new max
+                float sumval = 0.0;         //sum of the concentrations of every block in the cube
+                float max = A[0][0][0];     //block with the highest concentration
+                float min = A[0][0][0];     //block with the lowest concentration
 
-        printf("time=%f",time);
-        printf(" ratio=%f",ratio);
-        printf(" sumval=%f\n",sumval);
+                for(i=0;i<N;i++)
+                {
+                    for(j=0;j<N;j++)
+                    {
+                        for(k=0;k<N;k++)
+                        {
+                            max = fmax(max,A[i][j][k]);     //fmax returns the bigger concentratio and sets it as the max value
+                            min = fmin(min,A[i][j][k]);     //fmin returns the smaller concentratio and sets it as the min value
+                            sumval += A[i][j][k];
+                        }
+                    }
+                }
+                
+                ratio = min/max;
+
+                printf("time=%f",time);
+                printf(" ratio=%f",ratio);
+                printf(" sumval=%f\n",sumval);
+            }
+            printf("The box equilibrated in %f, seconds of simulated time.",time);
+            free(A);
+            break;
+        default:
+            printf("invalid input\n");
     }
-    printf("The box equilibrated in %f, seconds of simulated time.",time);
-    free(A);
 }
