@@ -12,7 +12,10 @@
 (defvar dterm (/ (* D timestep) (* disblock disblock))) ;
 (defvar R 0.0)                                          ;the ratio of the min concentration/max concentration in A
 (defvar tim 0.0)                                        ;keeps track of simulation time
-(defvar change)
+(defvar change)                                         ;is the change of concentrations between blocks
+(defvar sumval)                                         ;sum of the concentrations of every block in the cube
+(defvar maxval)                                         ;block with the highest concentration
+(defvar minval)                                         ;block with the lowest concentration
 
 (setf A(make-array'(10 10 10)))
 
@@ -21,10 +24,10 @@
     (dotimes (j 10)
         (dotimes (k 10)
             (setf (aref A i j k) 0.0)
-;            (setf (aref A i j k)(list i 'x j' x k'=(* i j k)))
         )
     )
 )
+
 ;sets the initial value
 (setf (aref A 0 0 0) 1.0e21)
 
@@ -38,41 +41,44 @@
 ;    )
 ;)
 
+;goes through each block of A(i,j,k) and compares the concentration (ratio) of every block next to it
+;the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
+;of the gas changes as time continues
 (loop
     (dotimes (i 10)
         (dotimes (j 10)
             (dotimes (k 10)
-                (if (>= (- i 1) 0)
+                (if (>= (- i 1) 0)      ;checks if i-1 >= 0
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A (- i 1) j k))))
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A (- i 1) j k) (+ (aref A (- i 1) j k) change)))
                 )
-                (if (< (+ i 1) 10)
+                (if (< (+ i 1) 10)      ;checks if i+1 < maxsize
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A (+ i 1) j k))))
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A (+ i 1) j k) (+ (aref A (+ i 1) j k) change)))
                 )
-                (if (< (+ j 1) 10)
+                (if (< (+ j 1) 10)      ;checks if j+1 < maxsize
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A i (+ j 1) k))))
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A i (+ j 1) k) (+ (aref A i (+ j 1) k) change)))
                 )
-                (if (>= (- j 1) 0)
+                (if (>= (- j 1) 0)      ;checks if j-1 >= 0
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A i (- j 1) k))))
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A i (- j 1) k) (+ (aref A i (- j 1) k) change)))
                 )
-                (if (>= (- k 1) 0)
+                (if (>= (- k 1) 0)      ;checks if k-1 >= 0
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A i j (- k 1)))))
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A i j (- k 1)) (+ (aref A i j (- k 1)) change)))
                 )
-                (if (< (+ k 1) 10)
+                (if (< (+ k 1) 10)      ;checks if k+1 < maxsize
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A i j (+ k 1)))))
                     (setf (aref A i j k) (- (aref A i j k) change))
@@ -81,44 +87,24 @@
             )
         )
     )
-    (setf tim (+ tim timestep))
-;    (dotimes (i 10)
-;        (dotimes (j 10)
-;            (dotimes (k 10)
-;                (dotimes (l 10)
-;                    (dotimes (m 10)
-;                        (dotimes (n 10)
-;                            (if or (and (= i l) (= j m) (= k (+ n 1))) (and (= i l) (= j m) (= k (- n 1))) (and (= i l) (= j (+ m 1)) (= k n)) (and (= i l) (= j (- m 1)) (= k n)) (and (= i (+ l 1)) (= j m) (= k n)) (and (= i (- l 1)) (= j m) (= k n))
-;                                (progn
-;                                (setf change (* (- (aref A i j k) (aref A l m n)) dterm))
-;                                (setf (aref A i j k) (- (aref A i j k) change))
-;                                (setf (aref A l m n) (+ (aref A l m n) change)))
-;                            )
-;                 (if and (< (+ k 1) N) (>= (- k 1) 0)
-;                        )
-;                    )
-;                )
-;            )
-;        )
-;    )
-    (defvar sumval 0.0)
-    (defvar maxval (aref A 0 0 0))
-    (defvar minval (aref A 0 0 0))
+    (setf tim (+ tim timestep))     ;increments the simulation time
+    
+    ;check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
+    ;determines the new ratio after 1 step: divides the new min by the new max
+    (setf sumval 0.0)               ;sets the sumval to 0.0
+    (setf maxval (aref A 0 0 0))    ;sets the maxval to the value in A 0 0 0
+    (setf minval (aref A 0 0 0))    ;sets the minval to the value in A 0 0 0
     (dotimes (i 10)
         (dotimes (k 10)
             (dotimes (j 10)
-                (setf maxval (max (aref A i j k) maxval))
-                (setf minval (min (aref A i j k) minval))
-;                (if (< maxval (aref A i j k))
-;                   (setf maxval (aref A i j k)))
-;                (if (< minval (aref A i j k))
-;                    (setf minval (aref A i j k)))
+                (setf maxval (max (aref A i j k) maxval))       ;the max function returns the bigger of the 2 numbers and stores it in maxval
+                (setf minval (min (aref A i j k) minval))       ;the min function returns the smaller of the 2 numbers and stores it in minval
                 (setf sumval (+ sumval (aref A i j k)))
             )
         )
     )
-    (setf R (/ minval maxval))
-    (format t "~f ~f ~e ~%" tim R sumval)
+    (setf R (/ minval maxval))  ;gets an updated ratio
+    (format t "~F    ~F    ~e ~%" tim R sumval)
     (when (>= R 0.99) (return R))
 )
 (format t "Box equilibrated in ~f seconds of simulated time." tim)
