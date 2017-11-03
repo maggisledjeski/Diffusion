@@ -1,5 +1,7 @@
 #!/usr/bin/sbcl --script
 
+;; Checked for mass consistency on 11/3/17
+;;
 ;Varibles that are the same for setting up the cube with or without the partition
 (defvar A)                                              ;mutlidimentional array
 (defvar N 10.0)                                         ;maxsize
