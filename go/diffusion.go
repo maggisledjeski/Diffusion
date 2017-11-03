@@ -40,27 +40,28 @@ func main() {
                         if i==0 && j==0 && k==0 {
                             A[0][0][0] = 1.0e21
                         } 
-                        if j>=N/2 && k==N/2 {
-                            A[i][j][k] = -100       //-100 is the value of a wall
+                        if j>=(N/2)-1 && k==(N/2)-1 {
+                            A[i][j][k] = -1       //-1 is the value of a wall
                         } else {
                             A[i][j][k] = 0.0
                         }
                     }
                 }
             }
+            A[0][0][0] = 1.0e21
 //            to print
-//            for i=0; i < N; i++ {
-//                for j=0; j<N; j++ {
-//                    for k=0; k<N; k++ {
-//                        fmt.Print(A[i][j][k] );
-//                    }
-//                    fmt.Println();
-//                }
-//                fmt.Println();
-//            }
+            for i=0; i < N; i++ {
+                for j=0; j<N; j++ {
+                    for k=0; k<N; k++ {
+                        fmt.Print(A[i][j][k] );
+                    }
+                    fmt.Println();
+                }
+                fmt.Println();
+            }
             
             for ratio<0.99 {
-                fmt.Printf("%d %d %d\n", i, j, k)
+                //fmt.Printf("%d %d %d\n", i, j, k)
                 time = time + timestep
                 for i=0; i<N; i++ {
                     for j=0; j<N; j++ {
@@ -68,21 +69,25 @@ func main() {
                             for l=0; l<N; l++ {
                                 for m=0; m<N; m++ {
                                     for n=0; n<N; n++ {
-                                        if A[l][m][n] != -100 {
-                                            if((i==l)&&(j==m)&&(k==n+1)&&(A[l][m][n+1]!=-100))||((i==l)&&(j==m)&&(k==n-1)&&(A[l][m][n-1]!=-100))||((i==l)&&(j==m+1)&&(k==n)&&(A[l][m+1][n]!=-100))||((i==l)&&(j==m-1)&&(k==n)&&(A[l][m-1][n]!=-100))||((i==l+1)&&(j==m)&&(k==n)&&(A[l+1][m][n]!=-100))||((i==l-1)&&(j==m)&&(k==n)&&(A[l-1][m][n]!=-100)) {
+                                        if A[l][m][n] != -1 {
+                                            if((i==l)&&(j==m)&&(k==n+1)&&(A[l][m][n+1]!=-1))||((i==l)&&(j==m)&&(k==n-1)&&(A[l][m][n-1]!=-1))||((i==l)&&(j==m+1)&&(k==n)&&(A[l][m+1][n]!=-1))||((i==l)&&(j==m-1)&&(k==n)&&(A[l][m-1][n]!=-1))||((i==l+1)&&(j==m)&&(k==n)&&(A[l+1][m][n]!=-1))||((i==l-1)&&(j==m)&&(k==n)&&(A[l-1][m][n]!=-1)) {
                                                 change := (A[i][j][k]-A[l][m][n])*DTerm;
                                                 A[i][j][k] = A[i][j][k] - change;
                                                 A[l][m][n] = A[l][m][n] + change;
-                                                fmt.Printf("%d %d %d %d %d %d\n", i, j, k, l, m, n)
+                                                //fmt.Printf("%g ", A[i][j][k]);
+                                               // fmt.Printf("%d %d %d %d %d %d\n", i, j, k, l, m, n)
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+                    //fmt.Printf("%g\n", A[i][j][k])
                     }
+                //fmt.Printf("%g\n", A[i][j][k])
                 } 
-                fmt.Printf("%d %d %d\n", i, j, k)
+                //fmt.Printf("%d %d %d\n", i, j, k)
+                //fmt.Printf("%g\n", A[i][j][k])
                 sumval := 0.0
                 max := A[0][0][0]
                 min := A[0][0][0]
@@ -90,7 +95,7 @@ func main() {
                 for i=0; i<N; i++ {
                     for j=0; j<N; j++ {
                         for k=0; k<N; k++ {
-                            if A[i][j][k] != -100 {
+                            if A[i][j][k] != -1 {
                                 if max < A[i][j][k] {
                                     max = A[i][j][k]    //new max if a bigger concentration is found within the cube
                                 }
