@@ -32,6 +32,93 @@ int main(int argc, char** argv)
     {
         case 'y':
             printf("This program will run with a partition...\n");
+            //Allocating the space for the 3d array
+            for(i=0;i<N;i++)
+            {
+                A[i] = malloc(N*sizeof(float*));
+                for(j=0;j<N;j++)
+                {
+                    A[i][j] = malloc(N*sizeof(float));
+                }
+            }
+            printf("allocated done");
+            for(i=0;i<N;i++)
+            {
+                for(j=0;j<N;j++)
+                {
+                    for(k=0;k<N;k++)
+                    {
+                        if(j>=(N/2)-1 && k==(N/2)-1)
+                        {
+                            A[i][j][k] = -1;
+                        }
+                        else
+                        {
+                            A[i][j][k] = 0.0;
+                        }
+                    }
+                }
+            }
+            A[0][0][0] = 1.0e21;
+            
+            while(ratio < 0.99)
+            {
+                time = time + timestep;
+                for(i=0;i<N;i++)
+                {
+                    for(j=0;j<N;j++)
+                    {
+                        for(k=0;k<N;k++)
+                        {
+                            for(l=0;l<N;l++)
+                            {
+                                for(m=0;m<N;m++)
+                                {
+                                    for(n=0;n<N;n++)
+                                    {
+                                        if(A[l][m][n] != -1)
+                                        {
+                                            if(((i==l)&&(j==m)&&(k==n+1)&&(A[l][m][n+1]!=-1))||((i==l)&&(j==m)&&(k==n-1)&&(A[l][m][n-1]!=-1))||((i==l)&&(j==m+1)&&(k==n)&&(A[l][m+1][n]!=-1))||((i==l)&&(j==m-1)&&(k==n)&&(A[l][m-1][n]!=-1))||((i==l+1)&&(j==m)&&(k==n)&&(A[l+1][m][n]!=-1))||((i==l-1)&&(j==m)&&(k==n)&&(A[l-1][m][n]!=-1)))
+                                            {
+                                                change = (A[i][j][k]-A[l][m][n])*DTerm;
+                                                A[i][j][k] = A[i][j][k] - change;
+                                                A[l][m][n] = A[l][m][n] + change;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                float sumval = 0.0;         //sum of the concentrations of every block in the cube
+                float max = A[0][0][0];     //block with the highest concentration
+                float min = A[0][0][0];     //block with the lowest concentration
+
+                for(i=0;i<N;i++)
+                {
+                    for(j=0;j<N;j++)
+                    {
+                        for(k=0;k<N;k++)
+                        {
+                            if(A[l][m][n] != -1)
+                            {
+                                max = fmax(max,A[i][j][k]);     //fmax returns the bigger concentratio and sets it as the max value
+                                min = fmin(min,A[i][j][k]);     //fmin returns the smaller concentratio and sets it as the min value
+                                sumval += A[i][j][k];
+                            }
+                        }
+                    }
+                }
+
+                ratio = min/max;
+
+                printf("time=%f",time);
+                printf(" ratio=%f",ratio);
+                printf(" sumval=%f\n",sumval);
+            }
+            printf("The box equilibrated in %f, seconds of simulated time with a partition.",time);
+            free(A);
             break;
         case 'n':
             printf("This program will run without a partition...\n");
@@ -120,7 +207,7 @@ int main(int argc, char** argv)
                 printf(" ratio=%f",ratio);
                 printf(" sumval=%f\n",sumval);
             }
-            printf("The box equilibrated in %f, seconds of simulated time.",time);
+            printf("The box equilibrated in %f, seconds of simulated time without a partition.",time);
             free(A);
             break;
         default:
