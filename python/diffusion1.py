@@ -15,50 +15,116 @@ DTerm=D*timestep/(disblock*disblock)
 time=0.0
 ratio=0.0
 
-while ratio <= .99:
-    for i in range(0,N):
-        for j in range(0,N):
-            for k in range(0,N):
-                if k+1 < N and k-1 >= 0:
-                    if A[i][j][k+1] != A[i][j][k]:
-                        change=(A[i][j][k]-A[i][j][k+1])*DTerm
-                        A[i][j][k]=A[i][j][k]-change
-                        A[i][j][k+1]=A[i][j][k+1]+change
-                    if A[i][j][k-1] != A[i][j][k]:
-                        change=(A[i][j][k]-A[i][j][k-1])*DTerm
-                        A[i][j][k]=A[i][j][k]-change
-                        A[i][j][k-1]=A[i][j][k-1]+change
-                if j+1 < N and j-1 >= 0:
-                    if A[i][j+1][k] != A[i][j][k]:
-                        change=(A[i][j][k]-A[i][j+1][k])*DTerm
-                        A[i][j][k]=A[i][j][k]-change
-                        A[i][j+1][k]=A[i][j+1][k]+change
-                    if A[i][j-1][k] != A[i][j][k]:
-                        change=(A[i][j][k]-A[i][j-1][k])*DTerm
-                        A[i][j][k]=A[i][j][k]-change
-                        A[i][j-1][k]=A[i][j-1][k]+change
-                if i+1 < N and i-1 >= 0:
-                    if A[i+1][j][k] != A[i][j][k]:
-                        change=(A[i][j][k]-A[i+1][j][k])*DTerm
-                        A[i][j][k]=A[i][j][k]-change
-                        A[i+1][j][k]=A[i+1][j][k]+change
-                    if A[i-1][j][k] != A[i][j][k]:
-                        change=(A[i][j][k]-A[i-1][j][k])*DTerm
-                        A[i][j][k]=A[i][j][k]-change
-                        A[i-1][j][k]=A[i-1][j][k]+change
-    time=time+timestep
-    sumval=0.0
-    maxval=A[0][0][0]
-    minval=A[0][0][0]
-    for i in range(0,N):
-        for j in range(0,N):
-            for k in range(0,N):
-                if maxval<A[i][j][k]:
-                    maxval=A[i][j][k]
-                if minval>A[i][j][k]:
-                    minval=A[i][j][k]
-                sumval=sumval+A[i][j][k]
+validAnswer = "no"
+while validAnswer == "no":
+    var = raw_input("Please enter 'y' for partion, and 'n' to run without a partition: ")
+    print "you entered", var
+    if var=="y":
+        print "This program will run with a partition..."
+        validAnswer = "yes"
+        for i in range(0,N):
+            for j in range(0,N):
+                for k in range(0,N):
+                    if j/2 >= (N/2)-1 and k/2 == (N/2)-1:
+                        A[i][j][k] = -1
+        while ratio <= .99:
+            for i in range(0,N):
+                for j in range(0,N):
+                    for k in range(0,N):
+                        if A[i][j][k] != -1:
+                            if k+1 < N and k-1 >= 0:
+                                if A[i][j][k+1] != A[i][j][k]:
+                                        change=(A[i][j][k]-A[i][j][k+1])*DTerm
+                                        A[i][j][k]=A[i][j][k]-change
+                                        A[i][j][k+1]=A[i][j][k+1]+change
+                                    if A[i][j][k-1] != A[i][j][k]:
+                                        change=(A[i][j][k]-A[i][j][k-1])*DTerm
+                                        A[i][j][k]=A[i][j][k]-change
+                                        A[i][j][k-1]=A[i][j][k-1]+change
+                                if j+1 < N and j-1 >= 0:
+                                    if A[i][j+1][k] != A[i][j][k]:
+                                        change=(A[i][j][k]-A[i][j+1][k])*DTerm
+                                        A[i][j][k]=A[i][j][k]-change
+                                        A[i][j+1][k]=A[i][j+1][k]+change
+                                    if A[i][j-1][k] != A[i][j][k]:
+                                        change=(A[i][j][k]-A[i][j-1][k])*DTerm
+                                        A[i][j][k]=A[i][j][k]-change
+                                        A[i][j-1][k]=A[i][j-1][k]+change
+                                if i+1 < N and i-1 >= 0:
+                                    if A[i+1][j][k] != A[i][j][k]:
+                                        change=(A[i][j][k]-A[i+1][j][k])*DTerm
+                                        A[i][j][k]=A[i][j][k]-change
+                                        A[i+1][j][k]=A[i+1][j][k]+change
+                                    if A[i-1][j][k] != A[i][j][k]:
+                                        change=(A[i][j][k]-A[i-1][j][k])*DTerm
+                                        A[i][j][k]=A[i][j][k]-change
+                                        A[i-1][j][k]=A[i-1][j][k]+change
+            time=time+timestep
+            sumval=0.0
+            maxval=A[0][0][0]
+            minval=A[0][0][0]
+            for i in range(0,N):
+                for j in range(0,N):
+                    for k in range(0,N):
+                        if A[i][j][k] != -1:
+                            if maxval<A[i][j][k]:
+                                maxval=A[i][j][k]
+                            if minval>A[i][j][k]:
+                                minval=A[i][j][k]
+                        sumval=sumval+A[i][j][k]
 
-    ratio=minval/maxval
-    print time, ratio, sumval
-print "Box equilibrated in ",time," seconds of simulated time."
+            ratio=minval/maxval
+            print time, ratio, sumval
+        print "Box equilibrated in ",time," seconds of simulated time with a partition."
+    elif var=="n":
+        print "This program will run without a partition..."
+        validAnswer = "yes"
+        while ratio <= .99:
+            for i in range(0,N):
+                for j in range(0,N):
+                    for k in range(0,N):
+                        if k+1 < N and k-1 >= 0:
+                            if A[i][j][k+1] != A[i][j][k]:
+                                change=(A[i][j][k]-A[i][j][k+1])*DTerm
+                                A[i][j][k]=A[i][j][k]-change
+                                A[i][j][k+1]=A[i][j][k+1]+change
+                            if A[i][j][k-1] != A[i][j][k]:
+                                change=(A[i][j][k]-A[i][j][k-1])*DTerm
+                                A[i][j][k]=A[i][j][k]-change
+                                A[i][j][k-1]=A[i][j][k-1]+change
+                        if j+1 < N and j-1 >= 0:
+                            if A[i][j+1][k] != A[i][j][k]:
+                                change=(A[i][j][k]-A[i][j+1][k])*DTerm
+                                A[i][j][k]=A[i][j][k]-change
+                                A[i][j+1][k]=A[i][j+1][k]+change
+                            if A[i][j-1][k] != A[i][j][k]:
+                                change=(A[i][j][k]-A[i][j-1][k])*DTerm
+                                A[i][j][k]=A[i][j][k]-change
+                                A[i][j-1][k]=A[i][j-1][k]+change
+                        if i+1 < N and i-1 >= 0:
+                            if A[i+1][j][k] != A[i][j][k]:
+                                change=(A[i][j][k]-A[i+1][j][k])*DTerm
+                                A[i][j][k]=A[i][j][k]-change
+                                A[i+1][j][k]=A[i+1][j][k]+change
+                            if A[i-1][j][k] != A[i][j][k]:
+                                change=(A[i][j][k]-A[i-1][j][k])*DTerm
+                                A[i][j][k]=A[i][j][k]-change
+                                A[i-1][j][k]=A[i-1][j][k]+change
+            time=time+timestep
+            sumval=0.0
+            maxval=A[0][0][0]
+            minval=A[0][0][0]
+            for i in range(0,N):
+                for j in range(0,N):
+                    for k in range(0,N):
+                        if maxval<A[i][j][k]:
+                            maxval=A[i][j][k]
+                        if minval>A[i][j][k]:
+                            minval=A[i][j][k]
+                        sumval=sumval+A[i][j][k]
+
+            ratio=minval/maxval
+            print time, ratio, sumval
+        print "Box equilibrated in ",time," seconds of simulated time without a partition."
+    else:
+        print "invalid input"
