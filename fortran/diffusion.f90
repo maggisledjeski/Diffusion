@@ -4,46 +4,72 @@ PROGRAM diffusion
 
 USE diffusion_mod
 real (kind=4)::cubesum
-integer::mem_stat
-char::answer
-
-400
-!partition?
-print*,"partition? Please type either 'Y' or 'N' and press enter"
-read*,answer
+integer::mem_stat,s
+character(LEN=1)::answer
+s=1
+do while (s==1) 
+    print*,"partition? Please type either 'Y' or 'N' and press enter"
+    read*,answer
+    if ((answer.eq.'Y').or.(answer.eq.'N')) then
+        if (answer.eq.'Y') then
+            print*,"This program will run with a partition..."
+            s=0
+        else
+            print*,"This program will run without a parition..."
+            s=0
+            print*,"How big is the cube?"
+            read*,mdim
+!            do while (s==0)
+!                if (mdim <= 100) then
+                    print*,"Valid mdim number"
+                    call fill_cube
+                    cubesum=sum(cube)
+                    print*,cubesum
+                    deallocate(cube,STAT=mem_stat)
+                    if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
+!                else
+!                    print*,"Invalid mdim number"
+!                    s=1
+!                end if
+!            end do
+        s=0
+        end if
+        s=0
+    end if
+end do
 !if neither of these are typed ask again
 !look into toLowerCase
-if (answer.eq."Y") then
-   goto 200
-else if (answer.eq."N") then
-   goto 100
-else
-   goto 400
-end if
+!if (answer.eq."Y") then
+!   goto 200
+!else if (answer.eq."N") then
+!   goto 100
+!else
+!   goto 400
+!end if
 !Y= go to statement where it asks for cube size and calls the subroutine that
 !does partition
 !jumps to another label after the subroutine call
 !N= go to statement where it asks for the cube size and calls fill_cube
-100
-print*,"How big is the cube?"
-read*,mdim
+!100
+!!!!print*,"How big is the cube?"
+!!!!read*,mdim
 !if mdim>100
 !   goto 100
-call fill_cube
-cubesum=sum(cube)
-print*,cubesum
-goto 300
-200
-print*,"How big is the cube?"
-read*,mdim
+!!!!call fill_cube
+!!!!cubesum=sum(cube)
+!print*,cubesum
+!goto 300
+!200
+!print*,"How big is the cube?"
+!read*,mdim
 !if mdim>100
 !   goto 200
-call partition !call partition subroutine
+!call partition !call partition subroutine
 !cubesum=sum(cube)
-print*,cubesum
-300
-deallocate(cube,STAT=mem_stat)
-if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
+!!!!print*,cubesum
+!300
+!!!!deallocate(cube,STAT=mem_stat)
+!!!!if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
 
 END PROGRAM diffusion
 
@@ -153,11 +179,9 @@ do while (ratio<0.99)
                 do l=1,mdim
                     do m=1,mdim
                         do n=1,mdim
-                            if
-(((i.eq.l).and.(j.eq.m).and.(k.eq.n-1)).or.((i.eq.l).and.(j.eq.m).and.(k.eq.n+1))&
+                            if (((i.eq.l).and.(j.eq.m).and.(k.eq.n-1)).or.((i.eq.l).and.(j.eq.m).and.(k.eq.n+1))&
                                 .or.((i.eq.l).and.(j.eq.m+1).and.(k.eq.n)).or.((i.eq.l).and.(j.eq.m-1).and.(k.eq.n))&
-                                .or.((i.eq.l+1).and.(j.eq.m).and.(k.eq.n)).or.((i.eq.l-1).and.(j.eq.m).and.(k.eq.n)))
-then
+                                .or.((i.eq.l+1).and.(j.eq.m).and.(k.eq.n)).or.((i.eq.l-1).and.(j.eq.m).and.(k.eq.n))) then
                                 change=(cube(k,j,i)-cube(n,m,l))*DTerm
                                 cube(k,j,i)=cube(k,j,i)-change
                                 cube(n,m,l)=cube(n,m,l)+change
