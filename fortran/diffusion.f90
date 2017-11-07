@@ -14,6 +14,14 @@ do while (s==1)
         if (answer.eq.'Y') then
             print*,"This program will run with a partition..."
             s=0
+            print*,"How big is the cube?"
+            read*,mdim
+            print*,"Valid mdim number"
+            call partition
+            cubesum=sum(cube)
+            !print*,cubesum
+            deallocate(cube,STAT=mem_stat)
+            if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
         else
             print*,"This program will run without a parition..."
             s=0
@@ -24,7 +32,7 @@ do while (s==1)
                     print*,"Valid mdim number"
                     call fill_cube
                     cubesum=sum(cube)
-                    print*,cubesum
+             !       print*,cubesum
                     deallocate(cube,STAT=mem_stat)
                     if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
 !                else
@@ -34,7 +42,6 @@ do while (s==1)
 !            end do
         s=0
         end if
-        s=0
     end if
 end do
 !if neither of these are typed ask again
@@ -78,18 +85,19 @@ SUBROUTINE fill_cube
 USE diffusion_mod
 integer::mem_stat
 real::D,roomD,speed,timestep,disblock,DTerm,time,ratio,change,sumval,maxelement,minelement
-D=0.175
-roomD=5
-speed=250.0
-timestep=(roomD/speed)/mdim
-disblock=roomD/mdim
-DTerm=D*timestep/(disblock*disblock)
-time=0.0
-ratio=0.0
+D=0.175                                 !diffusion coefficient
+roomD=5                                 !room dimension is 5 meters
+speed=250.0                             !speed of gas molecule based on 100 g/mol gas at RT
+timestep=(roomD/speed)/mdim             !basis for spatial stepsizes with respect to position in seconds
+disblock=roomD/mdim                     !is the distance between blocks
+DTerm=D*timestep/(disblock*disblock)    !
+time=0.0                                !tracks the simulated time
+ratio=0.0                               !the ratio of the min concentration/the max concentration
 
-allocate(cube(mdim,mdim,mdim),STAT=mem_stat)
+allocate(cube(mdim,mdim,mdim),STAT=mem_stat)    !Allocating space for a size  mdimXmdimXmdim
 if(mem_stat/=0)STOP "MEMORY ALLOCATION ERROR"
 
+!initializes the initial values of the cube as 0.0
 do i=1,mdim
     do j=1,mdim
         do k=1,mdim
@@ -98,7 +106,11 @@ do i=1,mdim
     end do
 end do
 
-cube(1,1,1)=1.0e21
+cube(1,1,1)=1.0e21  !sets the cube at (1,1,1) to the initial concentration of 1.0e21
+
+!goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
+!the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
+!of the gas changes as time continues
 do while (ratio<0.99)
     do i=1,mdim
         do j=1,mdim
@@ -120,7 +132,10 @@ do while (ratio<0.99)
         end do
     end do
     
-    time=time+timestep
+    time=time+timestep  !increments the simulated time
+    
+    !check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
+    !determines the new ratio after 1 step: divides the new min concentration by the new max concentration
     sumval=0.0
     maxelement=cube(1,1,1)
     minelement=cube(1,1,1)
@@ -128,10 +143,10 @@ do while (ratio<0.99)
         do j=1,mdim
             do k=1,mdim
                 if (maxelement<cube(k,j,i)) then
-                    maxelement=cube(k,j,i)
+                    maxelement=cube(k,j,i)          !new max if a bigger concentration is found within the cube
                 end if
                 if (minelement>cube(k,j,i)) then
-                    minelement=cube(k,j,i)
+                    minelement=cube(k,j,i)          !new min if a smaller concentration is found within the cube
                 end if
                 sumval=sumval+cube(k,j,i)
             end do
@@ -151,27 +166,35 @@ SUBROUTINE partition
 USE diffusion_mod
 integer::mem_stat
 real::D,roomD,speed,timestep,disblock,DTerm,time,ratio,change,sumval,maxelement,minelement
-D=0.175
-roomD=5
-speed=250.0
-timestep=(roomD/speed)/mdim
-disblock=roomD/mdim
-DTerm=D*timestep/(disblock*disblock)
-time=0.0
-ratio=0.0
+D=0.175                                 !diffusion coefficient
+roomD=5                                 !room dimension is 5 meters
+speed=250.0                             !speed of gas molecule based on 100 g/mol gas at RT
+timestep=(roomD/speed)/mdim             !basis for spatial stepsizes with respect to position in seconds
+disblock=roomD/mdim                     !is the distance between blocks
+DTerm=D*timestep/(disblock*disblock)    !
+time=0.0                                !tracks the simulated time
+ratio=0.0                               !the ratio of the min concentration/the max concentration
 
 allocate(cube(mdim,mdim,mdim),STAT=mem_stat)
 if(mem_stat/=0)STOP "MEMORY ALLOCATION ERROR"
-
+!initializes the initial values of the cube as well as the walls
 do i=1,mdim
     do j=1,mdim
         do k=1,mdim
-            cube(i,j,k)=0.0
+            if ((j.ge.(mdim/2)+1) .and. (k.eq.(mdim/2)+1)) then !-1=172 seconds +1=105 seconds
+                cube(i,j,k)=-1        !-1 dipicts a wall in the room
+            else
+                cube(i,j,k)=0.0
+            end if
         end do
     end do
 end do
 
-cube(1,1,1)=1.0e21
+cube(1,1,1)=1.0e21  !sets the cube at (1,1,1) to the initial concentration of 1.0e21
+
+!goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
+!the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
+!of the gas changes as time continues
 do while (ratio<0.99)
     do i=1,mdim
         do j=1,mdim
@@ -179,12 +202,17 @@ do while (ratio<0.99)
                 do l=1,mdim
                     do m=1,mdim
                         do n=1,mdim
-                            if (((i.eq.l).and.(j.eq.m).and.(k.eq.n-1)).or.((i.eq.l).and.(j.eq.m).and.(k.eq.n+1))&
-                                .or.((i.eq.l).and.(j.eq.m+1).and.(k.eq.n)).or.((i.eq.l).and.(j.eq.m-1).and.(k.eq.n))&
-                                .or.((i.eq.l+1).and.(j.eq.m).and.(k.eq.n)).or.((i.eq.l-1).and.(j.eq.m).and.(k.eq.n))) then
-                                change=(cube(k,j,i)-cube(n,m,l))*DTerm
-                                cube(k,j,i)=cube(k,j,i)-change
-                                cube(n,m,l)=cube(n,m,l)+change
+                            if (cube(n,m,l) .ne. -1) then
+                                if (((i.eq.l).and.(j.eq.m).and.(k.eq.n-1).and.(cube(n-1,m,l).ne.-1)).or.&
+                                    ((i.eq.l).and.(j.eq.m).and.(k.eq.n+1).and.(cube(n+1,m,l).ne.-1)).or.&
+                                    ((i.eq.l).and.(j.eq.m+1).and.(k.eq.n).and.(cube(n,m+1,l).ne.-1)).or.&
+                                    ((i.eq.l).and.(j.eq.m-1).and.(k.eq.n).and.(cube(n,m-1,l).ne.-1)).or.&
+                                    ((i.eq.l+1).and.(j.eq.m).and.(k.eq.n).and.(cube(n,m,l+1).ne.-1)).or.&
+                                    ((i.eq.l-1).and.(j.eq.m).and.(k.eq.n).and.(cube(n,m,l-1).ne.-1))) then
+                                        change=(cube(k,j,i)-cube(n,m,l))*DTerm
+                                        cube(k,j,i)=cube(k,j,i)-change
+                                        cube(n,m,l)=cube(n,m,l)+change
+                                end if
                             end if
                         end do
                     end do
@@ -193,20 +221,25 @@ do while (ratio<0.99)
         end do
     end do
 
-    time=time+timestep
+    time=time+timestep  !increments the simulated time
+
+    !check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
+    !determines the new ratio after 1 step: divides the new min concentration by the new max concentration
     sumval=0.0
     maxelement=cube(1,1,1)
     minelement=cube(1,1,1)
     do i=1,mdim
         do j=1,mdim
             do k=1,mdim
-                if (maxelement<cube(k,j,i)) then
-                    maxelement=cube(k,j,i)
+                if (cube(k,j,i).ne.-1) then
+                    if (maxelement<cube(k,j,i)) then
+                        maxelement=cube(k,j,i)          !new max if a bigger concentration is found within the cube
+                    end if
+                    if (minelement>cube(k,j,i)) then
+                        minelement=cube(k,j,i)          !new min if a smaller concentration is found within the cube
+                    end if
+                    sumval=sumval+cube(k,j,i)
                 end if
-                if (minelement>cube(k,j,i)) then
-                    minelement=cube(k,j,i)
-                end if
-                sumval=sumval+cube(k,j,i)
             end do
         end do
     end do
