@@ -41,7 +41,7 @@ int main(int argc, char** argv)
                     A[i][j] = malloc(N*sizeof(float));
                 }
             }
-            printf("allocated done");
+            printf("allocated done");//seg fault before here
             for(i=0;i<N;i++)
             {
                 for(j=0;j<N;j++)
