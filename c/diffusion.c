@@ -11,8 +11,8 @@ int main(int argc, char** argv)
     //Varibles that are the same for setting up the cube with or without the partition
     const int N = 10;                               //maxsize
     const float x = 10.0;                           //maxsize in a float
-    int i,j,k,l,m,n;
-    float*** A = malloc(N*sizeof(float***));        //the multidimensional array
+    int i,j,k,l,m,n;                                
+    float*** A = malloc(N*sizeof(float**));        //the multidimensional array
     float D = 0.175;                                //diffusion coeficient
     float room = 5.0;                               //room dimension is 5 meters
     float speed = 250.0;                            //speed of gas molecule based on 100 g/mol gas at RT
@@ -23,25 +23,26 @@ int main(int argc, char** argv)
     float ratio = 0.0;                              //the ratio of the min concentration/the max concentration
     float change;                                   //is the change of concentrations between blocks
 
+    //Allocating the space for the 3d array
+    for(i=0;i<N;i++)
+    {
+        A[i] = malloc(N*sizeof(float*));
+        for(j=0;j<N;j++)
+        {
+            A[i][j] = malloc(N*sizeof(float));
+        }
+    }
+
     //get user input do run the program with a partition or not
     char type;
     printf("Do you want to run this program with a partition?\n");
     printf("Enter y for partition, or enter n to run without a partition:\n");
     scanf("%c", &type);
-    switch (type)
+    switch(type)
     {
         case 'y':
             printf("This program will run with a partition...\n");
-            //Allocating the space for the 3d array
-            for(i=0;i<N;i++)
-            {
-                A[i] = malloc(N*sizeof(float*));
-                for(j=0;j<N;j++)
-                {
-                    A[i][j] = malloc(N*sizeof(float));
-                }
-            }
-            printf("allocated done");//seg fault before here
+            //set 3d array to 0.0 and set up the walls=-1
             for(i=0;i<N;i++)
             {
                 for(j=0;j<N;j++)
@@ -59,8 +60,10 @@ int main(int argc, char** argv)
                     }
                 }
             }
-            A[0][0][0] = 1.0e21;
-            
+            A[0][0][0] = 1.0e21;    //initializes the first cube to 1.0e21
+            //goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
+            //the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
+            //of the gas changes as time continues
             while(ratio < 0.99)
             {
                 time = time + timestep;
@@ -91,26 +94,25 @@ int main(int argc, char** argv)
                         }
                     }
                 }
+                
                 float sumval = 0.0;         //sum of the concentrations of every block in the cube
                 float max = A[0][0][0];     //block with the highest concentration
                 float min = A[0][0][0];     //block with the lowest concentration
-
                 for(i=0;i<N;i++)
                 {
                     for(j=0;j<N;j++)
                     {
                         for(k=0;k<N;k++)
                         {
-                            if(A[l][m][n] != -1)
+                            if(A[i][j][k] != -1)
                             {
-                                max = fmax(max,A[i][j][k]);     //fmax returns the bigger concentratio and sets it as the max value
-                                min = fmin(min,A[i][j][k]);     //fmin returns the smaller concentratio and sets it as the min value
+                                max = fmax(max, A[i][j][k]);     //fmax returns the bigger concentratio and sets it as the max value
+                                min = fmin(min, A[i][j][k]);     //fmin returns the smaller concentratio and sets it as the min value
                                 sumval += A[i][j][k];
                             }
                         }
                     }
                 }
-
                 ratio = min/max;
 
                 printf("time=%f",time);
@@ -121,17 +123,7 @@ int main(int argc, char** argv)
             free(A);
             break;
         case 'n':
-            printf("This program will run without a partition...\n");
-            //Allocating the space for the 3d array
-            for(i=0;i<N;i++)
-            {
-                A[i] = malloc(N*sizeof(float*));
-                for(j=0;j<N;j++)
-                {
-                    A[i][j] = malloc(N*sizeof(float));
-                }
-            }
-            
+            printf("This program will run without a partition...\n");            
             //set 3d array to 0 except for first cube which is set to 1.0e21
             for(i=0;i<N;i++)
             {
@@ -156,7 +148,7 @@ int main(int argc, char** argv)
             //of the gas changes as time continues
             while(ratio < 0.99)
             {
-                time = time + timestep;
+                time = time + timestep; //increments the simulated time
                 for(i=0;i<N;i++)
                 {
                     for(j=0;j<N;j++)
