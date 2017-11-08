@@ -18,8 +18,8 @@ public class Diffusion
         double timestep = (room/speed)/N;               //basis for spatial stepsizes with respect to position in seconds
         double disblock = room/N;                       //is the distance between blocks
         double DTerm = D*timestep/(disblock*disblock);  //
-        double time = 0.0;
-        double ratio = 0.0;
+        double time = 0.0;                              //tracks the simulated time
+        double ratio = 0.0;                             //the ratio of the min concentration/the max concentration
 
         Console.WriteLine("Attempting to allocate " + (N*N*N) + " Doubles");
         
@@ -117,7 +117,7 @@ public class Diffusion
                         {
                             for(k=0;k<N;k++)
                             {
-                                if(j/2 >= (N/2)-1 && k/2 == (N/2)-1)
+                                if((j/2 >= (N/2)-1) && (k/2 == (N/2)-1))
                                 {
                                     A[i,j,k] = wall;
                                 }
@@ -135,7 +135,8 @@ public class Diffusion
                     A[0,0,0] = 1.0e21;
                     Console.WriteLine("Running program with a partition...");
                     ratio = 0.0;
-                    while(ratio < 0.99)
+                    //Console.WriteLine("Running program with a partition...");
+                    while(ratio <= 0.99)
                     {
                         time = time + timestep;
                         for(i=0;i<N;i++)
@@ -150,9 +151,14 @@ public class Diffusion
                                         {
                                             for(n=0;n<N;n++)
                                             {
-                                                if(A[l,m,n] != wall)
+                                                if(A[l,m,n] != -1 && A[i,j,k]!=-1)
                                                 {
-                                                    if(((i==l)&&(j==m)&&(k==n+1)&&(A[l,m,n+1]!=wall))||((i==l)&&(j==m)&&(k==n-1)&&(A[l,m,n-1]!=wall))||((i==l)&&(j==m+1)&&(k==n)&&(A[l,m+1,n]!=wall))||((i==l)&&(j==m-1)&&(k==n)&&(A[l,m-1,n]!=wall))||((i==l+1)&&(j==m)&&(k==n)&&(A[l+1,m,n]!=wall))||((i==l-1)&&(j==m)&&(k==n)&&(A[l-1,m,n]!=wall)))
+                                                    if(((i==l)&&(j==m)&&(k==n+1)&&(A[l,m,n+1]!=wall))|
+                                                        ((i==l)&&(j==m)&&(k==n-1)&&(A[l,m,n-1]!=wall))|
+                                                        ((i==l)&&(j==m+1)&&(k==n)&&(A[l,m+1,n]!=wall))|
+                                                        ((i==l)&&(j==m-1)&&(k==n)&&(A[l,m-1,n]!=wall))|
+                                                        ((i==l+1)&&(j==m)&&(k==n)&&(A[l+1,m,n]!=wall))|
+                                                        ((i==l-1)&&(j==m)&&(k==n)&&(A[l-1,m,n]!=wall)))
                                                     {   
                                                         change = (A[i,j,k]-A[l,m,n])*DTerm;
                                                         A[i,j,k] = A[i,j,k] - change;
@@ -171,15 +177,17 @@ public class Diffusion
                     double sumval = 0.0;    //sum of the concentrations of every block in the cube
                     double max = A[0,0,0];  //block with the highest concentration
                     double min = A[0,0,0];  //block with the lowest concentration
-                    
+                    Console.WriteLine("declare");
                     for(i=0;i<N;i++)
                     {
                         for(j=0;j<N;j++)
                         {
                             for(k=0;k<N;k++)
                             {
+                                Console.WriteLine("loop");
                                 if(A[i,j,k] != wall)
                                 {
+                                    Console.WriteLine("in if");
                                     if(max < A[i,j,k])
                                     {
                                         max = A[i,j,k]; //new max if a bigger concentration is found within the cube
@@ -193,6 +201,7 @@ public class Diffusion
                             }
                         }
                     }
+                    Console.WriteLine("outside loop");
                     ratio = min/max;
                     Console.WriteLine(time + " " + ratio + " " + sumval);
                 }
