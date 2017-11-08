@@ -44,45 +44,12 @@ do while (s==1)
         end if
     end if
 end do
-!if neither of these are typed ask again
-!look into toLowerCase
-!if (answer.eq."Y") then
-!   goto 200
-!else if (answer.eq."N") then
-!   goto 100
-!else
-!   goto 400
-!end if
-!Y= go to statement where it asks for cube size and calls the subroutine that
-!does partition
-!jumps to another label after the subroutine call
-!N= go to statement where it asks for the cube size and calls fill_cube
-!100
-!!!!print*,"How big is the cube?"
-!!!!read*,mdim
-!if mdim>100
-!   goto 100
-!!!!call fill_cube
-!!!!cubesum=sum(cube)
-!print*,cubesum
-!goto 300
-!200
-!print*,"How big is the cube?"
-!read*,mdim
-!if mdim>100
-!   goto 200
-!call partition !call partition subroutine
-!cubesum=sum(cube)
-!!!!print*,cubesum
-!300
-!!!!deallocate(cube,STAT=mem_stat)
-!!!!if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
 
 END PROGRAM diffusion
 
-SUBROUTINE fill_cube
+SUBROUTINE fill_cube    !non-partition code
 
-USE diffusion_mod
+USE diffusion_mod   !uses diffusion_mod.f90 to define a cube
 integer::mem_stat
 real::D,roomD,speed,timestep,disblock,DTerm,time,ratio,change,sumval,maxelement,minelement
 D=0.175                                 !diffusion coefficient
@@ -136,9 +103,9 @@ do while (ratio<0.99)
     
     !check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
     !determines the new ratio after 1 step: divides the new min concentration by the new max concentration
-    sumval=0.0
-    maxelement=cube(1,1,1)
-    minelement=cube(1,1,1)
+    sumval=0.0              !sets the sumval to 0.0
+    maxelement=cube(1,1,1)  !sets the max concentration to the concentration in cube(1,1,1)
+    minelement=cube(1,1,1)  !sets the min concentration to the concentration in cube(1,1,1)
     do i=1,mdim
         do j=1,mdim
             do k=1,mdim
@@ -152,18 +119,18 @@ do while (ratio<0.99)
             end do
         end do
     end do
-    ratio=minelement/maxelement
+    ratio=minelement/maxelement !the ratio of the min concentration/max concentration
     print *,time," ",ratio," ",sumval
 
 end do
     
 print *,"Box equilibrated in ",time," seconds of simulated time."
 
-END SUBROUTINE fill_cube
+END SUBROUTINE fill_cube    !end of non-partition code
 
-SUBROUTINE partition
+SUBROUTINE partition    !partition code
 
-USE diffusion_mod
+USE diffusion_mod   !uses diffusion_mod.f90 to define a cube
 integer::mem_stat
 real::D,roomD,speed,timestep,disblock,DTerm,time,ratio,change,sumval,maxelement,minelement
 D=0.175                                 !diffusion coefficient
@@ -175,13 +142,13 @@ DTerm=D*timestep/(disblock*disblock)    !
 time=0.0                                !tracks the simulated time
 ratio=0.0                               !the ratio of the min concentration/the max concentration
 
-allocate(cube(mdim,mdim,mdim),STAT=mem_stat)
+allocate(cube(mdim,mdim,mdim),STAT=mem_stat)    !Allocating space for a size  mdimXmdimXmdim
 if(mem_stat/=0)STOP "MEMORY ALLOCATION ERROR"
 !initializes the initial values of the cube as well as the walls
 do i=1,mdim
     do j=1,mdim
         do k=1,mdim
-            if ((j.ge.(mdim/2)+1) .and. (k.eq.(mdim/2)+1)) then !-1=172 seconds +1=105 seconds
+            if (j.ge.(mdim/2) .and. k.eq.(mdim/2)) then 
                 cube(i,j,k)=-1        !-1 dipicts a wall in the room
             else
                 cube(i,j,k)=0.0
@@ -225,9 +192,9 @@ do while (ratio<0.99)
 
     !check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
     !determines the new ratio after 1 step: divides the new min concentration by the new max concentration
-    sumval=0.0
-    maxelement=cube(1,1,1)
-    minelement=cube(1,1,1)
+    sumval=0.0                  !sets the sumval to 0.0
+    maxelement=cube(1,1,1)      !sets the max concentration to the concentration in cube(1,1,1)
+    minelement=cube(1,1,1)      !sets the min concentration to the concentration in cube(1,1,1)
     do i=1,mdim
         do j=1,mdim
             do k=1,mdim
@@ -243,11 +210,11 @@ do while (ratio<0.99)
             end do
         end do
     end do
-    ratio=minelement/maxelement
+    ratio=minelement/maxelement !the ratio of the min concentration/max concentration
     print *,time," ",ratio," ",sumval
 
 end do
 
 print *,"Box equilibrated in ",time," seconds of simulated time with the partition."
 
-END SUBROUTINE partition
+END SUBROUTINE partition    !end of partition code
