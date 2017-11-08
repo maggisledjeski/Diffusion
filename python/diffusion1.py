@@ -26,8 +26,9 @@ while validAnswer == "no":
         for i in range(0,N):    #3 for loops set up the wall, and store the value of -1 at these locations
             for j in range(0,N):
                 for k in range(0,N):
-                    if j/2 >= (N/2)-1 and k/2 == (N/2)-1:
+                    if j >= (N/2)-1 and k == (N/2)-1:
                         A[i][j][k] = -1
+        A[0][0][0] = 1.0e21
         while ratio <= .99:
             for i in range(0,N):
                 for j in range(0,N):
@@ -72,7 +73,7 @@ while validAnswer == "no":
                                 maxval=A[i][j][k]   #new max if a bigger concentration is found within the cube
                             if minval>A[i][j][k]:
                                 minval=A[i][j][k]   #new min if a smaller concentration is found within the cube
-                        sumval=sumval+A[i][j][k]
+                            sumval=sumval+A[i][j][k]
 
             ratio=minval/maxval     #calculates the new ratio after each step
             print time, ratio, sumval
