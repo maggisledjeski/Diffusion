@@ -2,35 +2,35 @@ PROGRAM diffusion
 
 ! Code checked on 10/25/17
 
-USE diffusion_mod
+USE diffusion_mod   !defines a cube in the diffusion_mod.f90 module
 real (kind=4)::cubesum
 integer::mem_stat,s
 character(LEN=1)::answer
-s=1
+s=1 !to test if the user input a valid input
 do while (s==1) 
-    print*,"partition? Please type either 'Y' or 'N' and press enter"
+    print*,"To run this program with a partition type 'Y' then press enter. To run this program without a partion type 'N' then press enter"
     read*,answer
     if ((answer.eq.'Y').or.(answer.eq.'N')) then
         if (answer.eq.'Y') then
             print*,"This program will run with a partition..."
-            s=0
-            print*,"How big is the cube?"
+            s=0 !set s to 0 to confirm that the user entered a valid input and will end the while loop after the partition code has completed running
+            print*,"How big is the cube?"   !asks user for the Msize number and stores it in mdim
             read*,mdim
             print*,"Valid mdim number"
-            call partition
+            call partition  !calls the partition subroutine
             cubesum=sum(cube)
             !print*,cubesum
             deallocate(cube,STAT=mem_stat)
             if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
         else
             print*,"This program will run without a parition..."
-            s=0
-            print*,"How big is the cube?"
+            s=0 !set s to 0 to confirm that the user entered a valid input and will end the while loop after the non-partition code has completed running
+            print*,"How big is the cube?"   !asks user for the Msize number and stores it in mdim
             read*,mdim
 !            do while (s==0)
 !                if (mdim <= 100) then
                     print*,"Valid mdim number"
-                    call fill_cube
+                    call fill_cube  !calls the non-partition subroutine
                     cubesum=sum(cube)
              !       print*,cubesum
                     deallocate(cube,STAT=mem_stat)
