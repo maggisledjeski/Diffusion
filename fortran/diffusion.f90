@@ -124,7 +124,7 @@ do while (ratio<0.99)
 
 end do
     
-print *,"Box equilibrated in ",time," seconds of simulated time."
+print *,"Box equilibrated in ",time," seconds of simulated time without a partition."
 
 END SUBROUTINE fill_cube    !***end of non-partition code***
 
