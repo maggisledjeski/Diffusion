@@ -8,9 +8,17 @@
 
 int main(int argc, char** argv)
 {
+    int Msize;  //user input of msize
+    printf("Enter the Msize value (integer): \n");
+    scanf(" %d", &Msize);
+    
+    //***can change the range of valid numbers that the 3d array can be here***
+    if(Msize > 0 && Msize < 100)    
+    { 
+    printf("The Msize you have entered is %d",Msize);
     //Varibles that are the same for setting up the cube with or without the partition
-    const int N = 10;                               //maxsize
-    const float x = 10.0;                           //maxsize in a float
+    const int N = Msize;                               //maxsize
+    const float x = (float) Msize;                           //maxsize in a float
     int i,j,k,l,m,n;                                
     float*** A = malloc(N*sizeof(float**));        //the multidimensional array
     float D = 0.175;                                //diffusion coeficient
@@ -32,12 +40,12 @@ int main(int argc, char** argv)
             A[i][j] = malloc(N*sizeof(float));
         }
     }
-
+    
     //get user input do run the program with a partition or not
     char type;
     printf("Do you want to run this program with a partition?\n");
     printf("Enter y for partition, or enter n to run without a partition:\n");
-    scanf("%c", &type);
+    scanf(" %c", &type);
     switch(type)
     {
         //***start of partition code***
@@ -124,7 +132,7 @@ int main(int argc, char** argv)
                 }
                 ratio = min/max;    //calculates the updated ratio for every step
 
-                printf("%f",time);
+                printf("%f\n",time);
                 //printf(" %f",ratio);
                 //printf(" %f\n",sumval);
             }
@@ -207,7 +215,7 @@ int main(int argc, char** argv)
                 
                 ratio = min/max;    //calculates the updated ratio for every step
 
-                printf("%f",time);
+                printf("%f\n",time);
                 //printf(" %f",ratio);
                 //printf(" %f\n",sumval);
             }
@@ -219,5 +227,11 @@ int main(int argc, char** argv)
         //if user enters invalid input
         default:
             printf("invalid input\n");
+    }//end of partition switch
+    
+    }//end of Msize if
+    else
+    {
+        printf("Entered invalid Msize number\n");
     }
 }
