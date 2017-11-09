@@ -40,8 +40,10 @@ int main(int argc, char** argv)
     scanf("%c", &type);
     switch(type)
     {
+        //***start of partition code***
         case 'y':
             printf("This program will run with a partition...\n");
+            
             //set 3d array to 0.0 and set up the walls=-1
             for(i=0;i<N;i++)
             {
@@ -51,7 +53,7 @@ int main(int argc, char** argv)
                     {
                         if(j>=(N/2)-1 && k==(N/2)-1)
                         {
-                            A[i][j][k] = -1;
+                            A[i][j][k] = -1;    //initializes walls to equal -1
                         }
                         else
                         {
@@ -60,13 +62,17 @@ int main(int argc, char** argv)
                     }
                 }
             }
+
             A[0][0][0] = 1.0e21;    //initializes the first cube to 1.0e21
-            //goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
-            //the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
-            //of the gas changes as time continues
+            
+            //Goes through each block of two versions of the room (original[i][j][k]) and new([l][n][m])) and compares the concentration (ratio) 
+            //of every block next to it as long as the current block is not a wall. Also, the if statement containing all of the cases has an extra 
+            //case to check if that specific block next to the current is not a wall ex. A[l][m][n+1]!=-1. The change (change of concentration) 
+            //between the ratios is subtracted from the original and added to the new, in order to show the concentration of the gas changes 
+            //as simulated time continues.
             while(ratio < 0.99)
             {
-                time = time + timestep;
+                time = time + timestep;     //increments the simulation time
                 for(i=0;i<N;i++)
                 {
                     for(j=0;j<N;j++)
@@ -79,7 +85,7 @@ int main(int argc, char** argv)
                                 {
                                     for(n=0;n<N;n++)
                                     {
-                                        if(A[l][m][n] != -1)
+                                        if(A[l][m][n] != -1)    //checks to make sure that the current block is not a wall
                                         {
                                             if(((i==l)&&(j==m)&&(k==n+1)&&(A[l][m][n+1]!=-1))||((i==l)&&(j==m)&&(k==n-1)&&(A[l][m][n-1]!=-1))||((i==l)&&(j==m+1)&&(k==n)&&(A[l][m+1][n]!=-1))||((i==l)&&(j==m-1)&&(k==n)&&(A[l][m-1][n]!=-1))||((i==l+1)&&(j==m)&&(k==n)&&(A[l+1][m][n]!=-1))||((i==l-1)&&(j==m)&&(k==n)&&(A[l-1][m][n]!=-1)))
                                             {
@@ -95,9 +101,12 @@ int main(int argc, char** argv)
                     }
                 }
                 
+                //Check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube.
+                //Determines the new ratio after every step: divides the new min by the new max.
                 float sumval = 0.0;         //sum of the concentrations of every block in the cube
                 float max = A[0][0][0];     //block with the highest concentration
                 float min = A[0][0][0];     //block with the lowest concentration
+                
                 for(i=0;i<N;i++)
                 {
                     for(j=0;j<N;j++)
@@ -108,20 +117,23 @@ int main(int argc, char** argv)
                             {
                                 max = fmax(max, A[i][j][k]);     //fmax returns the bigger concentratio and sets it as the max value
                                 min = fmin(min, A[i][j][k]);     //fmin returns the smaller concentratio and sets it as the min value
-                                sumval += A[i][j][k];
+                                sumval += A[i][j][k];            //adds the sum of every block in the cube
                             }
                         }
                     }
                 }
-                ratio = min/max;
+                ratio = min/max;    //calculates the updated ratio for every step
 
-                printf("time=%f",time);
-                printf(" ratio=%f",ratio);
-                printf(" sumval=%f\n",sumval);
+                printf("%f",time);
+                //printf(" %f",ratio);
+                //printf(" %f\n",sumval);
             }
             printf("The box equilibrated in %f, seconds of simulated time with a partition.",time);
             free(A);
             break;
+            //***end of partition code***
+
+            //***start of non-partition code***
         case 'n':
             printf("This program will run without a partition...\n");            
             //set 3d array to 0 except for first cube which is set to 1.0e21
@@ -143,9 +155,9 @@ int main(int argc, char** argv)
                 }
             }
             
-            //goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
-            //the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
-            //of the gas changes as time continues
+            //Goes through each block of two versions of the room (original[i][j][k]) and new([l][n][m]))and compares the concentration (ratio)
+            //of every block next to it. The change (change of concentration) between the ratios is subtracted from the original and added to the new,
+            //in order to show the concentration of the gas changes as simulated time continues.
             while(ratio < 0.99)
             {
                 time = time + timestep; //increments the simulated time
@@ -174,8 +186,8 @@ int main(int argc, char** argv)
                     }
                 }
                 
-                //check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
-                //determines the new ratio after 1 step: divides the new min by the new max
+                //Check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube.
+                //Determines the new ratio after every step: divides the new min by the new max.
                 float sumval = 0.0;         //sum of the concentrations of every block in the cube
                 float max = A[0][0][0];     //block with the highest concentration
                 float min = A[0][0][0];     //block with the lowest concentration
@@ -188,20 +200,23 @@ int main(int argc, char** argv)
                         {
                             max = fmax(max,A[i][j][k]);     //fmax returns the bigger concentratio and sets it as the max value
                             min = fmin(min,A[i][j][k]);     //fmin returns the smaller concentratio and sets it as the min value
-                            sumval += A[i][j][k];
+                            sumval += A[i][j][k];           //adds the sum of every block in the cube
                         }
                     }
                 }
                 
-                ratio = min/max;
+                ratio = min/max;    //calculates the updated ratio for every step
 
-                printf("time=%f",time);
-                printf(" ratio=%f",ratio);
-                printf(" sumval=%f\n",sumval);
+                printf("%f",time);
+                //printf(" %f",ratio);
+                //printf(" %f\n",sumval);
             }
             printf("The box equilibrated in %f, seconds of simulated time without a partition.",time);
             free(A);
             break;
+            //***end of non-partition code***
+
+        //if user enters invalid input
         default:
             printf("invalid input\n");
     }
