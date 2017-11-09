@@ -47,7 +47,7 @@ end do
 
 END PROGRAM diffusion
 
-SUBROUTINE fill_cube    !non-partition code
+SUBROUTINE fill_cube    !***starts non-partition code***
 
 USE diffusion_mod   !uses diffusion_mod.f90 to define a cube
 integer::mem_stat
@@ -75,9 +75,9 @@ end do
 
 cube(1,1,1)=1.0e21  !sets the cube at (1,1,1) to the initial concentration of 1.0e21
 
-!goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
-!the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
-!of the gas changes as time continues
+!Goes through each block of two versions of the room (original(i,j,k) and new(l,m,n)) and compares the concentration (ratio)
+!of every block next to it. The change (change of concentration) between the ratios is subtracted from the original and added to the new, in
+!order to show the concentration of the gas changes as simulated time continues.
 do while (ratio<0.99)
     do i=1,mdim
         do j=1,mdim
@@ -101,8 +101,8 @@ do while (ratio<0.99)
     
     time=time+timestep  !increments the simulated time
     
-    !check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
-    !determines the new ratio after 1 step: divides the new min concentration by the new max concentration
+    !Check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube.
+    !Determines the new ratio after every step: divides the new min by the new max.
     sumval=0.0              !sets the sumval to 0.0
     maxelement=cube(1,1,1)  !sets the max concentration to the concentration in cube(1,1,1)
     minelement=cube(1,1,1)  !sets the min concentration to the concentration in cube(1,1,1)
@@ -115,7 +115,7 @@ do while (ratio<0.99)
                 if (minelement>cube(k,j,i)) then
                     minelement=cube(k,j,i)          !new min if a smaller concentration is found within the cube
                 end if
-                sumval=sumval+cube(k,j,i)
+                sumval=sumval+cube(k,j,i)           !adds the sum of every block in the cube
             end do
         end do
     end do
@@ -126,9 +126,9 @@ end do
     
 print *,"Box equilibrated in ",time," seconds of simulated time."
 
-END SUBROUTINE fill_cube    !end of non-partition code
+END SUBROUTINE fill_cube    !***end of non-partition code***
 
-SUBROUTINE partition    !partition code
+SUBROUTINE partition    !***start of partition code***
 
 USE diffusion_mod   !uses diffusion_mod.f90 to define a cube
 integer::mem_stat
@@ -159,9 +159,12 @@ end do
 
 cube(1,1,1)=1.0e21  !sets the cube at (1,1,1) to the initial concentration of 1.0e21
 
-!goes through each block of two versions (original(i,j,k) and new(l,n,m)) and compares the concentration (ratio) of every block next to it
-!the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
-!of the gas changes as time continues
+!Goes through each block of two versions of the room (original(i,j,k) and new(l,m,n)) and compares the concentration (ratio) 
+!of every block next to it as long as the current block is not a wall. Also, the if statement containing all of the cases has an extra 
+!case to check if that specific block next to the current is not a wall ex. A[l][m][n+1]!=-1. The change (change of concentration) 
+!between the ratios is subtracted from the original and added to the new, in order to show the concentration of the gas changes 
+!as simulated time continues.
+
 do while (ratio<0.99)
     do i=1,mdim
         do j=1,mdim
@@ -190,8 +193,8 @@ do while (ratio<0.99)
 
     time=time+timestep  !increments the simulated time
 
-    !check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube
-    !determines the new ratio after 1 step: divides the new min concentration by the new max concentration
+    !Check for mass consistency: to make sure that we are accounting for every molecule of gas, and that none of the gas goes outside the cube.
+    !Determines the new ratio after every step: divides the new min by the new max.
     sumval=0.0                  !sets the sumval to 0.0
     maxelement=cube(1,1,1)      !sets the max concentration to the concentration in cube(1,1,1)
     minelement=cube(1,1,1)      !sets the min concentration to the concentration in cube(1,1,1)
@@ -205,7 +208,7 @@ do while (ratio<0.99)
                     if (minelement>cube(k,j,i)) then
                         minelement=cube(k,j,i)          !new min if a smaller concentration is found within the cube
                     end if
-                    sumval=sumval+cube(k,j,i)
+                    sumval=sumval+cube(k,j,i)           !adds the sum of every block in the cube
                 end if
             end do
         end do
@@ -217,4 +220,4 @@ end do
 
 print *,"Box equilibrated in ",time," seconds of simulated time with the partition."
 
-END SUBROUTINE partition    !end of partition code
+END SUBROUTINE partition    !***end of partition code***
