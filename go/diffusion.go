@@ -3,10 +3,10 @@ package main
 import (
     "fmt"
     "strings"
+    "time"
 )
-
-func main() {
-     
+//function to run diffusion
+func diffusion() {
     //Varibles that are the same for setting up the cube with or without the partition
     const N int = 10                        //maxsize
     var A[N][N][N]float64                   //cube declaration of size NxNxN
@@ -180,3 +180,10 @@ func main() {
             fmt.Printf("Entered an invalid input")
     }    
 }
+//function to track the wall time of the diffusion function
+func main() {
+    start := time.Now()
+    diffusion()
+    end := time.Now()
+    fmt.Printf("Wall Time:  %v\n", end.Sub(start))
+  }
