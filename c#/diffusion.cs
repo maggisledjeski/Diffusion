@@ -1,12 +1,16 @@
 using System;
-
+using System.Diagnostics;
 // Csharp checked on 10/20/17
 
 public class Diffusion
 {
     static public void Main()
     {
-        int msize;
+        //creates a stopwatch to get wall time
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+
+        int msize;  //user input for Msize
         Console.WriteLine("Enter the size of the box: ");
         msize = Convert.ToInt32(Console.ReadLine());
         Console.WriteLine("The Msize is: " + msize);
@@ -15,7 +19,7 @@ public class Diffusion
         //Varibles that are the same for setting up the cube with or without the partition
         int N = msize;                               //maxsize
         double[,,] A = new double[N,N,N];               //cube declaration of size NxNxN
-        int i,j,k,l,m,n;
+        int i,j,k;
         int wall = -1;                                  //the value/concentration of a wall block
         double change;                                  //is the change of concentrations between blocks
         double D = 0.175;                               //diffusion coefficient 
@@ -277,5 +281,10 @@ public class Diffusion
     {
         Console.WriteLine("Entered an invalid input");
     }
+    // Get the elapsed time as a TimeSpan value.
+    TimeSpan ts = sw.Elapsed;
+    // Format and display the TimeSpan value.
+    string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+    Console.WriteLine("Wall Time: " + elapsedTime);
     }
 }
