@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+//for wall clock
+#include <time.h>
+#include <sys/time.h>
 // C Checked on 10/20/17
 //
 // YOU really should look into the fmax and fmin function to simplify and speed up your program
@@ -8,6 +11,10 @@
 
 int main(int argc, char** argv)
 {
+    //set up clock
+    struct timeval tval_before, tval_after, tval_result;
+    gettimeofday(&tval_before, NULL);
+
     int Msize;  //user input of msize
     printf("Enter the Msize value (integer): \n");
     scanf(" %d", &Msize);
@@ -136,7 +143,7 @@ int main(int argc, char** argv)
                 //printf(" %f",ratio);
                 //printf(" %f\n",sumval);
             }
-            printf("The box equilibrated in %f, seconds of simulated time with a partition.",time);
+            printf("The box equilibrated in %f, seconds of simulated time with a partition.\n",time);
             free(A);
             break;
             //***end of partition code***
@@ -219,7 +226,7 @@ int main(int argc, char** argv)
                 //printf(" %f",ratio);
                 //printf(" %f\n",sumval);
             }
-            printf("The box equilibrated in %f, seconds of simulated time without a partition.",time);
+            printf("The box equilibrated in %f, seconds of simulated time without a partition.\n",time);
             free(A);
             break;
             //***end of non-partition code***
@@ -234,4 +241,7 @@ int main(int argc, char** argv)
     {
         printf("Entered invalid Msize number\n");
     }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("Time elapsed: %ld.%06ld seconds\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 }
