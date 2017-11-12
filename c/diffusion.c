@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     {
         //***start of partition code***
         case 'y':
-            printf("This program will run with a partition...\n");
+ //           printf("This program will run with a partition...\n");
             
             //set 3d array to 0.0 and set up the walls=-1
             for(i=0;i<N;i++)
@@ -94,7 +94,48 @@ int main(int argc, char** argv)
                     {
                         for(k=0;k<N;k++)
                         {
-                            for(l=0;l<N;l++)
+                            if(A[i][j][k] != -1)
+                            {    //checks to make sure that the current block is not a wall
+                                    if(k+1 < N && A[i][j][k+1] != -1) //A[i][j][k+1] != A[i][j][k] || A[i][j][k+1] != -1)
+                                    {
+                                            change=(A[i][j][k]-A[i][j][k+1])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j][k+1]=A[i][j][k+1]+change;
+                                    }
+                                    if(k-1 >= 0 && A[i][j][k-1] != -1) //A[i][j][k-1] != A[i][j][k] || A[i][j][k-1] != -1)
+                                    {
+                                            change=(A[i][j][k]-A[i][j][k-1])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j][k-1]=A[i][j][k-1]+change;
+                                    }
+                                    if(j+1 < N && A[i][j+1][k] != -1) //A[i][j+1][k] != A[i][j][k] || A[i][j+1][k] != -1)
+                                    {
+                                            change=(A[i][j][k]-A[i][j+1][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j+1][k]=A[i][j+1][k]+change;
+                                    }
+                                    if(j-1 >= 0 && A[i][j-1][k] != -1) //A[i][j-1][k] != A[i][j][k] || A[i][j-1][k] != -1)
+                                    {
+                                            change=(A[i][j][k]-A[i][j-1][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j-1][k]=A[i][j-1][k]+change;
+                                    }
+                                    if(i+1 < N && A[i+1][j][k] != -1) //A[i+1][j][k] != A[i][j][k] || A[i+1][j][k] != -1)
+                                    {
+                                            change=(A[i][j][k]-A[i+1][j][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i+1][j][k]=A[i+1][j][k]+change;
+                                    }
+                                    if(i-1 >= 0 && A[i-1][j][k] != -1) //A[i-1][j][k] != A[i][j][k] || A[i-1][j][k] != -1)
+                                    {
+                                            change=(A[i][j][k]-A[i-1][j][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i-1][j][k]=A[i-1][j][k]+change;
+                                    }
+                            }
+
+
+            /*                for(l=0;l<N;l++)
                             {
                                 for(m=0;m<N;m++)
                                 {
@@ -111,7 +152,7 @@ int main(int argc, char** argv)
                                         }
                                     }
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
@@ -139,18 +180,18 @@ int main(int argc, char** argv)
                 }
                 ratio = min/max;    //calculates the updated ratio for every step
 
-                printf("%f\n",time);
-                //printf(" %f",ratio);
+                printf("%f",time);
+                printf(" %f\n",ratio);
                 //printf(" %f\n",sumval);
             }
-            printf("The box equilibrated in %f, seconds of simulated time with a partition.\n",time);
+            //printf("The box equilibrated in %f, seconds of simulated time with a partition.\n",time);
             free(A);
             break;
             //***end of partition code***
 
             //***start of non-partition code***
         case 'n':
-            printf("This program will run without a partition...\n");            
+            //printf("This program will run without a partition...\n");            
             //set 3d array to 0 except for first cube which is set to 1.0e21
             for(i=0;i<N;i++)
             {
@@ -182,7 +223,43 @@ int main(int argc, char** argv)
                     {
                         for(k=0;k<N;k++)
                         {
-                            for(l=0;l<N;l++)
+                            if(k+1 < N && A[i][j][k+1] != A[i][j][k])
+                            {
+                                change=(A[i][j][k]-A[i][j][k+1])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j][k+1]=A[i][j][k+1]+change;
+                            }
+                            if(k-1 >= 0 && A[i][j][k-1] != A[i][j][k])
+                            {
+                                change=(A[i][j][k]-A[i][j][k-1])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j][k-1]=A[i][j][k-1]+change;
+                            }
+                            if(j+1 < N && A[i][j+1][k] != A[i][j][k])
+                            {
+                                change=(A[i][j][k]-A[i][j+1][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j+1][k]=A[i][j+1][k]+change;
+                            }
+                            if(j-1 >= 0 && A[i][j-1][k] != A[i][j][k])
+                            {
+                                change=(A[i][j][k]-A[i][j-1][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i][j-1][k]=A[i][j-1][k]+change;
+                            }
+                            if(i+1 < N && A[i+1][j][k] != A[i][j][k])
+                            {
+                                change=(A[i][j][k]-A[i+1][j][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i+1][j][k]=A[i+1][j][k]+change;
+                            }
+                            if(i-1 >= 0 && A[i-1][j][k] !=  A[i][j][k])
+                            {
+                                change=(A[i][j][k]-A[i-1][j][k])*DTerm;
+                                            A[i][j][k]=A[i][j][k]-change;
+                                            A[i-1][j][k]=A[i-1][j][k]+change;
+                            }
+                       /*     for(l=0;l<N;l++)
                             {
                                 for(m=0;m<N;m++)
                                 {
@@ -196,7 +273,7 @@ int main(int argc, char** argv)
                                         }      
                                     }
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
@@ -222,11 +299,11 @@ int main(int argc, char** argv)
                 
                 ratio = min/max;    //calculates the updated ratio for every step
 
-                printf("%f\n",time);
-                //printf(" %f",ratio);
+                printf("%f",time);
+                printf(" %f\n",ratio);
                 //printf(" %f\n",sumval);
             }
-            printf("The box equilibrated in %f, seconds of simulated time without a partition.\n",time);
+            //printf("The box equilibrated in %f, seconds of simulated time without a partition.\n",time);
             free(A);
             break;
             //***end of non-partition code***
