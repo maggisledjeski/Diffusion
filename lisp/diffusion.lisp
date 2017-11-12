@@ -2,10 +2,13 @@
 
 ;; Checked for mass consistency on 11/3/17
 ;;
+(defvar N)  ;user input for maxsize
+(setf N 0)
+(write-line "Enter size of cube: ")
+(setf N (read))
+
 ;Varibles that are the same for setting up the cube with or without the partition
 (defvar A)                                              ;mutlidimentional array
-(defvar N 10.0)                                         ;maxsize
-(defvar n 10)                                           ;maxsize integer
 (defvar D 0.175)                                        ;diffusion coefficient
 (defvar r 5.0)                                          ;room size in meters
 (defvar s 250.0)                                        ;speed of gas molecule based on 100 g/mol gas at RT
@@ -20,12 +23,12 @@
 (defvar minval)                                         ;block with the lowest concentration
 (defvar answer)                                         ;the string of what the user enters after the prompt
 
-(setf A(make-array'(10 10 10))) ;sets the up the 3d array
+(setf A(make-array`(,N ,N ,N))) ;sets the up the 3d array
 
 ;sets the initial value for A to 0
-(dotimes (i 10)
-    (dotimes (j 10)
-        (dotimes (k 10)
+(dotimes (i N)
+    (dotimes (j N)
+        (dotimes (k N)
             (setf (aref A i j k) 0.0)
         )
     )
@@ -34,7 +37,7 @@
 ;sets the initial value
 (setf (aref A 0 0 0) 1.0e21)                                    
 
-(write-line "enter 1:")         ;user input prompt
+(write-line "Enter n to run without a partition, and y to run with a partition:")         ;user input prompt
 (setq answer (read-line))       ;reads the line and stores it in the answer string
 
 ;non-partition code
@@ -46,22 +49,22 @@
 ;the change (change of concentration) between the ratios is subtracted from the original and added to the new, in order to show the concentration
 ;of the gas changes as time continues
 (loop
-    (dotimes (i 10)
-        (dotimes (j 10)
-            (dotimes (k 10)
+    (dotimes (i N)
+        (dotimes (j N)
+            (dotimes (k N)
                 (if (>= (- i 1) 0)      ;checks if i-1 >= 0
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A (- i 1) j k))))
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A (- i 1) j k) (+ (aref A (- i 1) j k) change)))
                 )
-                (if (< (+ i 1) 10)      ;checks if i+1 < maxsize
+                (if (< (+ i 1) N)      ;checks if i+1 < maxsize
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A (+ i 1) j k))))
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A (+ i 1) j k) (+ (aref A (+ i 1) j k) change)))
                 )
-                (if (< (+ j 1) 10)      ;checks if j+1 < maxsize
+                (if (< (+ j 1) N)      ;checks if j+1 < maxsize
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A i (+ j 1) k))))
                     (setf (aref A i j k) (- (aref A i j k) change))
@@ -79,7 +82,7 @@
                     (setf (aref A i j k) (- (aref A i j k) change))
                     (setf (aref A i j (- k 1)) (+ (aref A i j (- k 1)) change)))
                 )
-                (if (< (+ k 1) 10)      ;checks if k+1 < maxsize
+                (if (< (+ k 1) N)      ;checks if k+1 < maxsize
                     (progn
                     (setf change (* dterm (- (aref A i j k) (aref A i j (+ k 1)))))
                     (setf (aref A i j k) (- (aref A i j k) change))
@@ -95,9 +98,9 @@
     (setf sumval 0.0)               ;sets the sumval to 0.0
     (setf maxval (aref A 0 0 0))    ;sets the maxval to the value in A 0 0 0
     (setf minval (aref A 0 0 0))    ;sets the minval to the value in A 0 0 0
-    (dotimes (i 10)
-        (dotimes (j 10)
-            (dotimes (k 10)
+    (dotimes (i N)
+        (dotimes (j N)
+            (dotimes (k N)
                 (setf maxval (max (aref A i j k) maxval))       ;the max function returns the bigger of the 2 numbers and stores it in maxval
                 (setf minval (min (aref A i j k) minval))       ;the min function returns the smaller of the 2 numbers and stores it in minval
                 (setf sumval (+ sumval (aref A i j k)))
@@ -108,26 +111,27 @@
     (format t "~F    ~F    ~e ~%" tim R sumval)
     (when (>= R 0.99) (return R))
 )
-(format t "Box equilibrated in ~f seconds of simulated time without a partition." tim)))
+(format t "Box equilibrated in ~f seconds of simulated time without a partition." tim)
+))
 ;end of non-partition code
 
 ;partition code
 (if (string-equal answer "y")
     (progn
     (write-line "This program will run with a partition...")
-    (dotimes (i 10)
-        (dotimes (k 10)
-            (dotimes (j 10)
-                (if (and (>= j (- (/ 10 2) 1)) (= k (- (/ 10 2) 1)))
+    (dotimes (i N)
+        (dotimes (k N)
+            (dotimes (j N)
+                (if (and (>= j (- (/ N 2) 1)) (= k (- (/ N 2) 1)))
                     (setf (aref A i j k) -1))
             )
         )
     )
 
     (loop
-        (dotimes (i 10)
-            (dotimes (j 10)
-                (dotimes (k 10)
+        (dotimes (i N)
+            (dotimes (j N)
+                (dotimes (k N)
                     (if (/= (aref A i j k) -1)
                         (progn
                             (if (and (>= (- i 1) 0) (/= (aref A (- i 1) j k) -1))
@@ -136,13 +140,13 @@
                                     (setf (aref A i j k) (- (aref A i j k) change))
                                     (setf (aref A (- i 1) j k) (+ (aref A (- i 1) j k) change)))
                             )
-                            (if (and (< (+ i 1) 10) (/= (aref A (+ i 1) j k) -1))      ;checks if i+1 < maxsize
+                            (if (and (< (+ i 1) N) (/= (aref A (+ i 1) j k) -1))      ;checks if i+1 < maxsize
                                 (progn
                                     (setf change (* dterm (- (aref A i j k) (aref A (+ i 1) j k))))
                                     (setf (aref A i j k) (- (aref A i j k) change))
                                     (setf (aref A (+ i 1) j k) (+ (aref A (+ i 1) j k) change)))
                             )
-                            (if (and (< (+ j 1) 10) (/= (aref A i (+ j 1) k) -1))      ;checks if j+1 < maxsize
+                            (if (and (< (+ j 1) N) (/= (aref A i (+ j 1) k) -1))      ;checks if j+1 < maxsize
                                 (progn
                                     (setf change (* dterm (- (aref A i j k) (aref A i (+ j 1) k))))
                                     (setf (aref A i j k) (- (aref A i j k) change))
@@ -160,7 +164,7 @@
                                     (setf (aref A i j k) (- (aref A i j k) change))
                                     (setf (aref A i j (- k 1)) (+ (aref A i j (- k 1)) change)))
                             )
-                            (if (and (< (+ k 1) 10) (/= (aref A i j (+ k 1)) -1))      ;checks if k+1 < maxsize
+                            (if (and (< (+ k 1) N) (/= (aref A i j (+ k 1)) -1))      ;checks if k+1 < maxsize
                                 (progn
                                     (setf change (* dterm (- (aref A i j k) (aref A i j (+ k 1)))))
                                     (setf (aref A i j k) (- (aref A i j k) change))
@@ -178,9 +182,9 @@
         (setf sumval 0.0)               ;sets the sumval to 0.0
         (setf maxval (aref A 0 0 0))    ;sets the maxval to the value in A 0 0 0
         (setf minval (aref A 0 0 0))    ;sets the minval to the value in A 0 0 0
-        (dotimes (i 10)
-            (dotimes (j 10)
-                (dotimes (k 10)
+        (dotimes (i N)
+            (dotimes (j N)
+                (dotimes (k N)
                     (if (/= (aref A i j k) -1)
                         (progn
                             (setf maxval (max (aref A i j k) maxval))       ;the max function returns the bigger of the 2 numbers and stores it in maxval
