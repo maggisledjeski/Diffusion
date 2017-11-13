@@ -23,7 +23,7 @@
 (defvar minval)                                         ;block with the lowest concentration
 (defvar answer)                                         ;the string of what the user enters after the prompt
 
-(setf A(make-array`(,N ,N ,N))) ;sets the up the 3d array
+(setf A(make-array`(,N ,N ,N))) ;sets the up the 3d array of size NxNxN
 
 ;sets the initial value for A to 0
 (dotimes (i N)
@@ -123,18 +123,21 @@
         (dotimes (k N)
             (dotimes (j N)
                 (if (and (>= j (- (/ N 2) 1)) (= k (- (/ N 2) 1)))
-                    (setf (aref A i j k) -1))
+                    (setf (aref A i j k) -1))   ;sets up the walls 
             )
         )
     )
-
+    ;Goes through each block and compares the concentration (ratio) of every block next to it as long as the current block is not a wall.
+    ;Also, the if statements check that a specific block next to the current is not a wall.
+    ;The change (change of concentration) between the ratios is subtracted from the original and added to the new, in order
+    ;to show the concentration of the gas changes as simulated time continues.
     (loop
         (dotimes (i N)
             (dotimes (j N)
                 (dotimes (k N)
-                    (if (/= (aref A i j k) -1)
+                    (if (/= (aref A i j k) -1)  ;checks that the current block is not a wall
                         (progn
-                            (if (and (>= (- i 1) 0) (/= (aref A (- i 1) j k) -1))
+                            (if (and (>= (- i 1) 0) (/= (aref A (- i 1) j k) -1))    ;checks if i-1 >= 0
                                 (progn
                                     (setf change (* dterm (- (aref A i j k) (aref A (- i 1) j k))))
                                     (setf (aref A i j k) (- (aref A i j k) change))
@@ -185,7 +188,7 @@
         (dotimes (i N)
             (dotimes (j N)
                 (dotimes (k N)
-                    (if (/= (aref A i j k) -1)
+                    (if (/= (aref A i j k) -1)  ;checks that the current block is not a wall
                         (progn
                             (setf maxval (max (aref A i j k) maxval))       ;the max function returns the bigger of the 2 numbers and stores it in maxval
                             (setf minval (min (aref A i j k) minval))       ;the min function returns the smaller of the 2 numbers and stores it in minval
