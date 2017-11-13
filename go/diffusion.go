@@ -22,7 +22,7 @@ func diffusion() {
     time := 0.0                             //tracks simulated time
     ratio := 0.0                            //the ratio of the min concentration/the max concentration
 
-    //User input: enter yes in order to run the program with a partition. The default case will run without a partition.
+    //User input: enter yes in order to run the program with a partition, and no to run without a partition. The default case is used for invalid input.
     fmt.Print("To run program with a partition please enter 'yes', to run without a partition please enter 'no': ")
     var input string
     var lowerinput string
@@ -177,13 +177,13 @@ func diffusion() {
 
         //if invalid input is entered
         default:
-            fmt.Printf("Entered an invalid input")
+            fmt.Printf("Entered an invalid input\n")
     }    
 }
 //function to track the wall time of the diffusion function
 func main() {
     start := time.Now()
-    diffusion()
+    diffusion() //calls the diffusion method
     end := time.Now()
     fmt.Printf("Wall Time:  %v\n", end.Sub(start))
   }

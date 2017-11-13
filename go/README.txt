@@ -1,9 +1,12 @@
 README FILE FOR GO CODE:
 
 In this repository the file, diffusion.go, contains the code of my project.
-This file asks for user input on how to run the program, using a switch statement with cases to navigate whether the user wants to run a partition or not,
+This program's main function contains the code to time the diffusion function, which contains the diffusion code. The diffusion method asks for user input on
+how to run the program, using a switch statement with cases to navigate whether the user wants to run a partition or not,
 leaving the default case as "Entered an invalid input" if the user does not answer the prompt correctly.
-
+If one wanted to change the size of the room, go to lines 11 and 15 and change N and x. Make sure that x is a double or an error will be printed, and the 
+program will stop.
+ 
 In order to run this program correctly, please read the following:
 
 TO RUN WITHOUT A PARTITION:
