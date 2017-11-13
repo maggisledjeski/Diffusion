@@ -24,10 +24,10 @@ int main(int argc, char** argv)
     { 
     printf("The Msize you have entered is %d",Msize);
     //Varibles that are the same for setting up the cube with or without the partition
-    const int N = Msize;                               //maxsize
-    const float x = (float) Msize;                           //maxsize in a float
+    const int N = Msize;                            //maxsize
+    const float x = (float) Msize;                  //maxsize in a float
     int i,j,k,l,m,n;                                
-    float*** A = malloc(N*sizeof(float**));        //the multidimensional array
+    float*** A = malloc(N*sizeof(float**));         //the multidimensional array
     float D = 0.175;                                //diffusion coeficient
     float room = 5.0;                               //room dimension is 5 meters
     float speed = 250.0;                            //speed of gas molecule based on 100 g/mol gas at RT
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     {
         //***start of partition code***
         case 'y':
- //           printf("This program will run with a partition...\n");
+            printf("This program will run with a partition...\n");
             
             //set 3d array to 0.0 and set up the walls=-1
             for(i=0;i<N;i++)
@@ -80,11 +80,10 @@ int main(int argc, char** argv)
 
             A[0][0][0] = 1.0e21;    //initializes the first cube to 1.0e21
             
-            //Goes through each block of two versions of the room (original[i][j][k]) and new([l][n][m])) and compares the concentration (ratio) 
-            //of every block next to it as long as the current block is not a wall. Also, the if statement containing all of the cases has an extra 
-            //case to check if that specific block next to the current is not a wall ex. A[l][m][n+1]!=-1. The change (change of concentration) 
-            //between the ratios is subtracted from the original and added to the new, in order to show the concentration of the gas changes 
-            //as simulated time continues.
+            //Goes through each block and compares the concentration (ratio) of every block next to it as long as the current block is not a wall.
+            //Also, the if statements check that a specific block next to the current is not a wall ex. A[i,j,k+1]!=-1.
+            //The change (change of concentration) between the ratios is subtracted from the original and added to the new, in order
+            //to show the concentration of the gas changes as simulated time continues.
             while(ratio < 0.99)
             {
                 time = time + timestep;     //increments the simulation time
@@ -94,65 +93,45 @@ int main(int argc, char** argv)
                     {
                         for(k=0;k<N;k++)
                         {
-                            if(A[i][j][k] != -1)
-                            {    //checks to make sure that the current block is not a wall
-                                    if(k+1 < N && A[i][j][k+1] != -1) //A[i][j][k+1] != A[i][j][k] || A[i][j][k+1] != -1)
+                            if(A[i][j][k] != -1)    //checks to make sure that the current block is not a wall
+                            {
+                                    if(k+1 < N && A[i][j][k+1] != -1) 
                                     {
                                             change=(A[i][j][k]-A[i][j][k+1])*DTerm;
                                             A[i][j][k]=A[i][j][k]-change;
                                             A[i][j][k+1]=A[i][j][k+1]+change;
                                     }
-                                    if(k-1 >= 0 && A[i][j][k-1] != -1) //A[i][j][k-1] != A[i][j][k] || A[i][j][k-1] != -1)
+                                    if(k-1 >= 0 && A[i][j][k-1] != -1) 
                                     {
                                             change=(A[i][j][k]-A[i][j][k-1])*DTerm;
                                             A[i][j][k]=A[i][j][k]-change;
                                             A[i][j][k-1]=A[i][j][k-1]+change;
                                     }
-                                    if(j+1 < N && A[i][j+1][k] != -1) //A[i][j+1][k] != A[i][j][k] || A[i][j+1][k] != -1)
+                                    if(j+1 < N && A[i][j+1][k] != -1) 
                                     {
                                             change=(A[i][j][k]-A[i][j+1][k])*DTerm;
                                             A[i][j][k]=A[i][j][k]-change;
                                             A[i][j+1][k]=A[i][j+1][k]+change;
                                     }
-                                    if(j-1 >= 0 && A[i][j-1][k] != -1) //A[i][j-1][k] != A[i][j][k] || A[i][j-1][k] != -1)
+                                    if(j-1 >= 0 && A[i][j-1][k] != -1) 
                                     {
                                             change=(A[i][j][k]-A[i][j-1][k])*DTerm;
                                             A[i][j][k]=A[i][j][k]-change;
                                             A[i][j-1][k]=A[i][j-1][k]+change;
                                     }
-                                    if(i+1 < N && A[i+1][j][k] != -1) //A[i+1][j][k] != A[i][j][k] || A[i+1][j][k] != -1)
+                                    if(i+1 < N && A[i+1][j][k] != -1) 
                                     {
                                             change=(A[i][j][k]-A[i+1][j][k])*DTerm;
                                             A[i][j][k]=A[i][j][k]-change;
                                             A[i+1][j][k]=A[i+1][j][k]+change;
                                     }
-                                    if(i-1 >= 0 && A[i-1][j][k] != -1) //A[i-1][j][k] != A[i][j][k] || A[i-1][j][k] != -1)
+                                    if(i-1 >= 0 && A[i-1][j][k] != -1) 
                                     {
                                             change=(A[i][j][k]-A[i-1][j][k])*DTerm;
                                             A[i][j][k]=A[i][j][k]-change;
                                             A[i-1][j][k]=A[i-1][j][k]+change;
                                     }
                             }
-
-
-            /*                for(l=0;l<N;l++)
-                            {
-                                for(m=0;m<N;m++)
-                                {
-                                    for(n=0;n<N;n++)
-                                    {
-                                        if(A[l][m][n] != -1)    //checks to make sure that the current block is not a wall
-                                        {
-                                            if(((i==l)&&(j==m)&&(k==n+1)&&(A[l][m][n+1]!=-1))||((i==l)&&(j==m)&&(k==n-1)&&(A[l][m][n-1]!=-1))||((i==l)&&(j==m+1)&&(k==n)&&(A[l][m+1][n]!=-1))||((i==l)&&(j==m-1)&&(k==n)&&(A[l][m-1][n]!=-1))||((i==l+1)&&(j==m)&&(k==n)&&(A[l+1][m][n]!=-1))||((i==l-1)&&(j==m)&&(k==n)&&(A[l-1][m][n]!=-1)))
-                                            {
-                                                change = (A[i][j][k]-A[l][m][n])*DTerm;
-                                                A[i][j][k] = A[i][j][k] - change;
-                                                A[l][m][n] = A[l][m][n] + change;
-                                            }
-                                        }
-                                    }
-                                }
-                            }*/
                         }
                     }
                 }
@@ -181,17 +160,18 @@ int main(int argc, char** argv)
                 ratio = min/max;    //calculates the updated ratio for every step
 
                 printf("%f",time);
-                printf(" %f\n",ratio);
-                //printf(" %f\n",sumval);
+                printf(" %f",ratio);
+                printf(" %f\n",sumval);
             }
-            //printf("The box equilibrated in %f, seconds of simulated time with a partition.\n",time);
+            printf("The box equilibrated in %f, seconds of simulated time with a partition.\n",time);
             free(A);
             break;
             //***end of partition code***
 
             //***start of non-partition code***
         case 'n':
-            //printf("This program will run without a partition...\n");            
+            printf("This program will run without a partition...\n");            
+            
             //set 3d array to 0 except for first cube which is set to 1.0e21
             for(i=0;i<N;i++)
             {
@@ -211,8 +191,8 @@ int main(int argc, char** argv)
                 }
             }
             
-            //Goes through each block of two versions of the room (original[i][j][k]) and new([l][n][m]))and compares the concentration (ratio)
-            //of every block next to it. The change (change of concentration) between the ratios is subtracted from the original and added to the new,
+            //Goes through each block and compares the concentration (ratio) of every block next to it.
+            //The change (change of concentration) between the ratios is subtracted from the original and added to the new,
             //in order to show the concentration of the gas changes as simulated time continues.
             while(ratio < 0.99)
             {
@@ -259,21 +239,6 @@ int main(int argc, char** argv)
                                             A[i][j][k]=A[i][j][k]-change;
                                             A[i-1][j][k]=A[i-1][j][k]+change;
                             }
-                       /*     for(l=0;l<N;l++)
-                            {
-                                for(m=0;m<N;m++)
-                                {
-                                    for(n=0;n<N;n++)
-                                    {
-                                        if(((i==l)&&(j==m)&&(k==n+1))||((i==l)&&(j==m)&&(k==n-1))||((i==l)&&(j==m+1)&&(k==n))||((i==l)&&(j==m-1)&&(k==n))||((i==l+1)&&(j==m)&&(k==n))||((i==l-1)&&(j==m)&&(k==n)))
-                                        {
-                                            change = (A[i][j][k]-A[l][m][n])*DTerm;
-                                            A[i][j][k] = A[i][j][k] - change;
-                                            A[l][m][n] = A[l][m][n] + change;
-                                        }      
-                                    }
-                                }
-                            }*/
                         }
                     }
                 }
@@ -300,20 +265,20 @@ int main(int argc, char** argv)
                 ratio = min/max;    //calculates the updated ratio for every step
 
                 printf("%f",time);
-                printf(" %f\n",ratio);
-                //printf(" %f\n",sumval);
+                printf(" %f",ratio);
+                printf(" %f\n",sumval);
             }
-            //printf("The box equilibrated in %f, seconds of simulated time without a partition.\n",time);
+            printf("The box equilibrated in %f, seconds of simulated time without a partition.\n",time);
             free(A);
             break;
             //***end of non-partition code***
 
-        //if user enters invalid input
+        //if user enters invalid input for partition
         default:
             printf("invalid input\n");
-    }//end of partition switch
+    }
     
-    }//end of Msize if
+    }//user enters invalid Msize number
     else
     {
         printf("Entered invalid Msize number\n");
