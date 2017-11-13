@@ -19,7 +19,6 @@ do while (s==1)
             print*,"Valid mdim number"
             call partition  !calls the partition subroutine
             cubesum=sum(cube)
-            !print*,cubesum
             deallocate(cube,STAT=mem_stat)
             if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
         else
@@ -27,19 +26,10 @@ do while (s==1)
             s=0 !set s to 0 to confirm that the user entered a valid input and will end the while loop after the non-partition code has completed running
             print*,"How big is the cube?"   !asks user for the Msize number and stores it in mdim
             read*,mdim
-!            do while (s==0)
-!                if (mdim <= 100) then
-                    print*,"Valid mdim number"
-                    call fill_cube  !calls the non-partition subroutine
-                    cubesum=sum(cube)
-             !       print*,cubesum
-                    deallocate(cube,STAT=mem_stat)
-                    if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
-!                else
-!                    print*,"Invalid mdim number"
-!                    s=1
-!                end if
-!            end do
+            call fill_cube  !calls the non-partition subroutine
+            cubesum=sum(cube)
+            deallocate(cube,STAT=mem_stat)
+            if(mem_stat/=0)STOP "ERROR DEALLOCATING ARRAY"
         s=0
         end if
     end if
@@ -82,50 +72,19 @@ do while (ratio<0.99)
     do i=1,mdim
         do j=1,mdim
             do k=1,mdim
-                if((k+1 .lt. mdim) .and.( cube(k+1,j,i) .ne. cube(k,j,i))) then
-                    change=(cube(k,j,i)-cube(k+1,j,i))*DTerm
-                    cube(k,j,i)=cube(k,j,i)-change
-                    cube(k+1,j,i)=cube(k+1,j,i)+change
-                end if
-                if((k-1 .ge. 0) .and.( cube(k-1,j,i) .ne. cube(k,j,i))) then
-                    change=(cube(k,j,i)-cube(k-1,j,i))*DTerm
-                    cube(k,j,i)=cube(k,j,i)-change
-                    cube(k-1,j,i)=cube(k-1,j,i)+change
-                end if
-                if((j+1 .lt. mdim) .and.( cube(k,j+1,i) .ne. cube(k,j,i))) then
-                    change=(cube(k,j,i)-cube(k,j+1,i))*DTerm
-                    cube(k,j,i)=cube(k,j,i)-change
-                    cube(k,j+1,i)=cube(k,j+1,i)+change
-                end if
-                if((j-1 .ge. 0) .and.( cube(k,j-1,i) .ne. cube(k,j,i))) then
-                    change=(cube(k,j,i)-cube(k,j-1,i))*DTerm
-                    cube(k,j,i)=cube(k,j,i)-change
-                    cube(k,j-1,i)=cube(k,j-1,i)+change
-                end if
-                if((i+1 .lt. mdim) .and. (cube(k,j,i+1) .ne. cube(k,j,i))) then
-                    change=(cube(k,j,i)-cube(k,j,i+1))*DTerm
-                    cube(k,j,i)=cube(k,j,i)-change
-                    cube(k,j,i+1)=cube(k,j,i+1)+change
-                end if
-                if((i-1 .ge. 0) .and.( cube(k,j,i-1) .ne. cube(k,j,i))) then
-                    change=(cube(k,j,i)-cube(k,j,i-1))*DTerm
-                    cube(k,j,i)=cube(k,j,i)-change
-                    cube(k,j,i-1)=cube(k,j,i-1)+change
-                end if
-
-!                do l=1,mdim
-!                    do m=1,mdim
-!                        do n=1,mdim
-!                            if (((i.eq.l).and.(j.eq.m).and.(k.eq.n-1)).or.((i.eq.l).and.(j.eq.m).and.(k.eq.n+1))&
-!                                .or.((i.eq.l).and.(j.eq.m+1).and.(k.eq.n)).or.((i.eq.l).and.(j.eq.m-1).and.(k.eq.n))&
-!                                .or.((i.eq.l+1).and.(j.eq.m).and.(k.eq.n)).or.((i.eq.l-1).and.(j.eq.m).and.(k.eq.n))) then
-!                                change=(cube(k,j,i)-cube(n,m,l))*DTerm
-!                                cube(k,j,i)=cube(k,j,i)-change
-!                                cube(n,m,l)=cube(n,m,l)+change
-!                            end if
-!                        end do
-!                    end do
-!                end do
+                do l=1,mdim
+                    do m=1,mdim
+                        do n=1,mdim
+                            if (((i.eq.l).and.(j.eq.m).and.(k.eq.n-1)).or.((i.eq.l).and.(j.eq.m).and.(k.eq.n+1))&
+                                .or.((i.eq.l).and.(j.eq.m+1).and.(k.eq.n)).or.((i.eq.l).and.(j.eq.m-1).and.(k.eq.n))&
+                                .or.((i.eq.l+1).and.(j.eq.m).and.(k.eq.n)).or.((i.eq.l-1).and.(j.eq.m).and.(k.eq.n))) then
+                                change=(cube(k,j,i)-cube(n,m,l))*DTerm
+                                cube(k,j,i)=cube(k,j,i)-change
+                                cube(n,m,l)=cube(n,m,l)+change
+                            end if
+                        end do
+                    end do
+                end do
             end do
         end do
     end do
@@ -152,11 +111,8 @@ do while (ratio<0.99)
     end do
     ratio=minelement/maxelement !the ratio of the min concentration/max concentration
     print *,time," ",ratio," ",sumval
-
-end do
-    
+end do  
 print *,"Box equilibrated in ",time," seconds of simulated time without a partition."
-
 END SUBROUTINE fill_cube    !***end of non-partition code***
 
 SUBROUTINE partition    !***start of partition code***
@@ -246,9 +202,7 @@ do while (ratio<0.99)
     end do
     ratio=minelement/maxelement !the ratio of the min concentration/max concentration
     print *,time," ",ratio," ",sumval
-
 end do
-
 print *,"Box equilibrated in ",time," seconds of simulated time with the partition."
 
 END SUBROUTINE partition    !***end of partition code***
