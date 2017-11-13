@@ -8,7 +8,7 @@ integer::mem_stat,s
 character(LEN=1)::answer
 s=1 !to test if the user input a valid input
 do while (s==1) 
-    print*,"To run this program with a partition type 'Y' then press enter. To run this program without a partion type 'N' then press enter"
+    print*,"To run with a partition type 'Y' then press enter. To run without a partion type 'N' then press enter"
     read*,answer
     if ((answer.eq.'Y').or.(answer.eq.'N')) then
         if (answer.eq.'Y') then
@@ -82,19 +82,50 @@ do while (ratio<0.99)
     do i=1,mdim
         do j=1,mdim
             do k=1,mdim
-                do l=1,mdim
-                    do m=1,mdim
-                        do n=1,mdim
-                            if (((i.eq.l).and.(j.eq.m).and.(k.eq.n-1)).or.((i.eq.l).and.(j.eq.m).and.(k.eq.n+1))&
-                                .or.((i.eq.l).and.(j.eq.m+1).and.(k.eq.n)).or.((i.eq.l).and.(j.eq.m-1).and.(k.eq.n))&
-                                .or.((i.eq.l+1).and.(j.eq.m).and.(k.eq.n)).or.((i.eq.l-1).and.(j.eq.m).and.(k.eq.n))) then
-                                change=(cube(k,j,i)-cube(n,m,l))*DTerm
-                                cube(k,j,i)=cube(k,j,i)-change
-                                cube(n,m,l)=cube(n,m,l)+change
-                            end if
-                        end do
-                    end do
-                end do
+                if((k+1 .lt. mdim) .and.( cube(k+1,j,i) .ne. cube(k,j,i))) then
+                    change=(cube(k,j,i)-cube(k+1,j,i))*DTerm
+                    cube(k,j,i)=cube(k,j,i)-change
+                    cube(k+1,j,i)=cube(k+1,j,i)+change
+                end if
+                if((k-1 .ge. 0) .and.( cube(k-1,j,i) .ne. cube(k,j,i))) then
+                    change=(cube(k,j,i)-cube(k-1,j,i))*DTerm
+                    cube(k,j,i)=cube(k,j,i)-change
+                    cube(k-1,j,i)=cube(k-1,j,i)+change
+                end if
+                if((j+1 .lt. mdim) .and.( cube(k,j+1,i) .ne. cube(k,j,i))) then
+                    change=(cube(k,j,i)-cube(k,j+1,i))*DTerm
+                    cube(k,j,i)=cube(k,j,i)-change
+                    cube(k,j+1,i)=cube(k,j+1,i)+change
+                end if
+                if((j-1 .ge. 0) .and.( cube(k,j-1,i) .ne. cube(k,j,i))) then
+                    change=(cube(k,j,i)-cube(k,j-1,i))*DTerm
+                    cube(k,j,i)=cube(k,j,i)-change
+                    cube(k,j-1,i)=cube(k,j-1,i)+change
+                end if
+                if((i+1 .lt. mdim) .and. (cube(k,j,i+1) .ne. cube(k,j,i))) then
+                    change=(cube(k,j,i)-cube(k,j,i+1))*DTerm
+                    cube(k,j,i)=cube(k,j,i)-change
+                    cube(k,j,i+1)=cube(k,j,i+1)+change
+                end if
+                if((i-1 .ge. 0) .and.( cube(k,j,i-1) .ne. cube(k,j,i))) then
+                    change=(cube(k,j,i)-cube(k,j,i-1))*DTerm
+                    cube(k,j,i)=cube(k,j,i)-change
+                    cube(k,j,i-1)=cube(k,j,i-1)+change
+                end if
+
+!                do l=1,mdim
+!                    do m=1,mdim
+!                        do n=1,mdim
+!                            if (((i.eq.l).and.(j.eq.m).and.(k.eq.n-1)).or.((i.eq.l).and.(j.eq.m).and.(k.eq.n+1))&
+!                                .or.((i.eq.l).and.(j.eq.m+1).and.(k.eq.n)).or.((i.eq.l).and.(j.eq.m-1).and.(k.eq.n))&
+!                                .or.((i.eq.l+1).and.(j.eq.m).and.(k.eq.n)).or.((i.eq.l-1).and.(j.eq.m).and.(k.eq.n))) then
+!                                change=(cube(k,j,i)-cube(n,m,l))*DTerm
+!                                cube(k,j,i)=cube(k,j,i)-change
+!                                cube(n,m,l)=cube(n,m,l)+change
+!                            end if
+!                        end do
+!                    end do
+!                end do
             end do
         end do
     end do
