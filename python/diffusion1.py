@@ -25,7 +25,7 @@ def diffusion():
 
         validAnswer = "no"                      #used to compare the user input
         while validAnswer == "no":
-            var = raw_input("Please enter 'y' for partion, and 'n' to run without a partition: ")
+            var = raw_input("Please enter 'y' for partition, and 'n' to run without a partition: ")
             print "you entered", var            #user input
             if var=="y":    #runs the program with a partition
                 print "This program will run with a partition..."
@@ -34,7 +34,7 @@ def diffusion():
                     for j in range(0,N):
                         for k in range(0,N):
                             if j >= (N/2)-1 and k == (N/2)-1:
-                                A[i][j][k] = -1
+                                A[i][j][k] = -1 #wall is equal to -1
                 A[0][0][0] = 1.0e21
                 while ratio <= .99:
                     for i in range(0,N):
@@ -142,5 +142,5 @@ def diffusion():
 
 #wall time
 t0 = time.time()
-diffusion()
+diffusion() #calls the diffusion method
 print "Wall Time: ", time.time() - t0, "seconds"
