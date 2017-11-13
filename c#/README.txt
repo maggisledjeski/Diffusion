@@ -2,7 +2,7 @@ README FILE FOR C# CODE:
 
 In this repository the file, diffusion.cs, contains the code of my project.
 This file asks for user input on how to run the program, and uses an if statement to control the Msize (will print "Entered invalid input" if you enter 
-a number outside the bounds (set between 0 and 100, but can be changed at line )), with a while and an if statement which navigates the user to the partition code or the non-partition code until they have entered the correct input.
+a number outside the bounds (set between 0 and 100, but can be changed at line 17), with a while and an if statement which navigates the user to the partition code or the non-partition code until they have entered the correct input.
 
 In order to run this program correctly, please read the following:
 
@@ -20,6 +20,7 @@ You will see a confirmation statement: "This program will run without a partitio
 If the user does not enter either 1 or 2, "To run program with partition, enter 1, to run without a partition enter 2:" will print until the user enters a correct input.
 Then the simulated time will appear on the screen after each step is taken. In order to see the ratio and the mass consistency printed uncomment the lines.
 After the ratio has reached 0.99 the program will print: "The box equilibrated in (insert time here), seconds of simulated time without a partition." 
+Lastly, the program will print "Wall Time: (time)" and give the user the wall time.
 
 TO RUN WITH A PARTITION:
 Compile the code by typing: mcs diffusion.cs
@@ -35,4 +36,4 @@ You will see a confirmation statement: "This program will run with a partition..
 If the user does not enter either 1 or 2, "To run program with partition, enter 1, to run without a partition enter 2:" will print until the user enters a correct input.
 Then the simulated time will appear on the screen after each step is taken. In order to see the ratio and the mass consistency printed uncomment the lines.
 After the ratio has reached 0.99 the program will print: "The box equilibrated in (insert time here), seconds of simulated time with a partition."
-
+Lastly, the program will print "Wall Time: (time)" and give the user the wall time.

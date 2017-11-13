@@ -14,6 +14,7 @@ public class Diffusion
         Console.WriteLine("Enter the size of the box: ");
         msize = Convert.ToInt32(Console.ReadLine());
         Console.WriteLine("The Msize is: " + msize);
+        
         if(msize > 0 && msize <100)
         {
         //Varibles that are the same for setting up the cube with or without the partition
@@ -30,8 +31,6 @@ public class Diffusion
         double DTerm = D*timestep/(disblock*disblock);  //
         double time = 0.0;                              //tracks the simulated time
         double ratio = 0.0;                             //the ratio of the min concentration/the max concentration
-
-        Console.WriteLine("Attempting to allocate " + (N*N*N) + " Doubles");
         
         //User input: enter 1 to run with a partition, enter 2 to run without
         bool validAnswer = false; //used for choosing if the user wants a partition
@@ -148,6 +147,7 @@ public class Diffusion
                 else if(p==1)
                 {   //***start partition code***
                     Console.WriteLine("Running program with a partition...");
+                    
                     //set 3d array to 0.0 and set up the walls=-1
                     for(i=0;i<N;i++)
                     {
@@ -171,8 +171,7 @@ public class Diffusion
                     //Goes through each block and compares the concentration (ratio) of every block next to it as long as the current block is not a wall.
                     //Also, the if statements check that a specific block next to the current is not a wall ex. A[i,j,k+1]!=-1.
                     //The change (change of concentration) between the ratios is subtracted from the original and added to the new, in order
-                    //to show the concentration of the gas changes as simulated time continues.                    
-                    
+                    //to show the concentration of the gas changes as simulated time continues.                     
                     while(ratio <= .99)
                     {
                         for(i=0;i<N;i++)
@@ -181,17 +180,17 @@ public class Diffusion
                             {
                                 for(k=0;k<N;k++)
                                 {
-                                    if(A[i,j,k] != -1)    //checks to make sure that the current block is not a wall
+                                    if(A[i,j,k] != wall)    //checks to make sure that the current block is not a wall
                                     {
                                         if(k+1 < N && k-1 >= 0)
                                         {
-                                            if(A[i,j,k+1] != A[i,j,k] && A[i,j,k+1] != -1)
+                                            if(A[i,j,k+1] != A[i,j,k] && A[i,j,k+1] != wall)
                                             {
                                                 change=(A[i,j,k]-A[i,j,k+1])*DTerm;
                                                 A[i,j,k]=A[i,j,k]-change;
                                                 A[i,j,k+1]=A[i,j,k+1]+change;
                                             }
-                                            if(A[i,j,k-1] != A[i,j,k] && A[i,j,k-1] != -1)
+                                            if(A[i,j,k-1] != A[i,j,k] && A[i,j,k-1] != wall)
                                             {
                                                 change=(A[i,j,k]-A[i,j,k-1])*DTerm;
                                                 A[i,j,k]=A[i,j,k]-change;
@@ -201,7 +200,7 @@ public class Diffusion
                                         
                                         if(j+1 < N && j-1 >= 0)
                                         {
-                                            if(A[i,j+1,k] != A[i,j,k] && A[i,j+1,k] != -1)
+                                            if(A[i,j+1,k] != A[i,j,k] && A[i,j+1,k] != wall)
                                             {
                                                 change=(A[i,j,k]-A[i,j+1,k])*DTerm;
                                                 A[i,j,k]=A[i,j,k]-change;
@@ -216,13 +215,13 @@ public class Diffusion
                                         }   
                                         if(i+1 < N && i-1 >= 0)
                                         {
-                                            if(A[i+1,j,k] != A[i,j,k] && A[i+1,j,k] != -1)
+                                            if(A[i+1,j,k] != A[i,j,k] && A[i+1,j,k] != wall)
                                             {
                                                 change=(A[i,j,k]-A[i+1,j,k])*DTerm;
                                                 A[i,j,k]=A[i,j,k]-change;
                                                 A[i+1,j,k]=A[i+1,j,k]+change;
                                             }
-                                            if(A[i-1,j,k] != A[i,j,k] && A[i-1,j,k] != -1)
+                                            if(A[i-1,j,k] != A[i,j,k] && A[i-1,j,k] != wall)
                                             {
                                                 change=(A[i,j,k]-A[i-1,j,k])*DTerm;
                                                 A[i,j,k]=A[i,j,k]-change;
@@ -281,9 +280,9 @@ public class Diffusion
     {
         Console.WriteLine("Entered an invalid input");
     }
-    // Get the elapsed time as a TimeSpan value.
+    //Get the wall time
     TimeSpan ts = sw.Elapsed;
-    // Format and display the TimeSpan value.
+    //Format and display the TimeSpan value.
     string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
     Console.WriteLine("Wall Time: " + elapsedTime);
     }
